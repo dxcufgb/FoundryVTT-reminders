@@ -1,0 +1,142 @@
+.dxrm-card {
+  border: 2px solid #7a5a12;
+  border-radius: 6px;
+  padding: 6px;
+  background: rgba(122, 90, 18, 0.08);
+}
+
+.dxrm-card.dxrm-lair {
+  border-color: #2f5a3a;
+  background: rgba(47, 90, 58, 0.08);
+}
+
+.dxrm-card.dxrm-resist {
+  border-color: #2b4a7a;
+  background: rgba(43, 74, 122, 0.08);
+}
+
+.dxrm-card .dxrm-title {
+  margin: 0 0 4px;
+  font-size: 1.1em;
+  font-weight: bold;
+  border: none;
+}
+
+.dxrm-card .dxrm-text {
+  margin: 0 0 6px;
+}
+
+.dxrm-card .dxrm-group {
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+  padding-top: 4px;
+  margin-top: 4px;
+}
+
+.dxrm-card .dxrm-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.dxrm-card .dxrm-header img {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 4px;
+  object-fit: cover;
+  flex: 0 0 36px;
+}
+
+.dxrm-card .dxrm-who {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.dxrm-card .dxrm-points,
+.dxrm-card .dxrm-res {
+  font-size: 0.85em;
+  opacity: 0.85;
+}
+
+.dxrm-card .dxrm-summary {
+  margin: 2px 0 4px;
+  padding-left: 18px;
+}
+
+.dxrm-card .dxrm-summary .dxrm-cost,
+.dxrm-card .dxrm-label {
+  font-size: 0.85em;
+  opacity: 0.75;
+}
+
+.dxrm-card .dxrm-villain .dxrm-name,
+.dxrm-card .dxrm-summary .dxrm-villain {
+  font-style: italic;
+}
+
+.dxrm-card details.dxrm-use-list > summary {
+  cursor: pointer;
+  font-weight: bold;
+  margin: 2px 0;
+}
+
+.dxrm-card .dxrm-option {
+  margin-top: 4px;
+}
+
+.dxrm-card .dxrm-row {
+  display: flex;
+  gap: 4px;
+}
+
+.dxrm-card button.dxrm-use,
+.dxrm-card button.dxrm-resist-use {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+}
+
+.dxrm-card button.dxrm-use img {
+  width: 20px;
+  height: 20px;
+  border: none;
+}
+
+.dxrm-card button .dxrm-label {
+  margin-left: auto;
+}
+
+.dxrm-card button.dxrm-open,
+.dxrm-card button.dxrm-exclude {
+  flex: 0 0 32px;
+}
+
+.dxrm-card .dxrm-effect {
+  font-size: 0.85em;
+  margin: 2px 0 0 4px;
+  opacity: 0.85;
+}
+
+.dxrm-card .dxrm-option.dxrm-short,
+.dxrm-card .dxrm-option.dxrm-spent,
+.dxrm-card .dxrm-option.dxrm-excluded {
+  opacity: 0.45;
+}
+
+.dxrm-card .dxrm-option.dxrm-excluded .dxrm-name,
+.dxrm-card .dxrm-option.dxrm-spent .dxrm-name {
+  text-decoration: line-through;
+}
+
+.dxrm-config select {
+  flex: 2;
+}
+
+.dxrm-exclude-dialog .form-footer,
+.dxrm-exclude-dialog footer {
+  flex-wrap: wrap;
+}

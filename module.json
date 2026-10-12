@@ -1,0 +1,46 @@
+{
+  "id": "dxcufgbs-reminders",
+  "title": "Dxcufgb's Reminders",
+  "description": "Keeps legendary actions, villain actions, lair actions and legendary resistances in the GM's chat at the right moments. Cards list each option with its cost and the points remaining; expand Use an Action for native dnd5e Use buttons that spend legendary points through the system pipeline. Each world keeps its own editable Reminder list (the legendary and lair actions of the 2014 and 2024 Monster Manuals).",
+  "version": "1.0.0",
+  "authors": [
+    {
+      "name": "Dxcufgb",
+      "url": "https://github.com/Dxcufgb"
+    }
+  ],
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "relationships": {
+    "systems": [
+      {
+        "id": "dnd5e",
+        "type": "system",
+        "compatibility": {
+          "minimum": "4.0.0"
+        }
+      }
+    ]
+  },
+  "url": "https://github.com/dxcufgb/FoundryVTT-reminders",
+  "manifest": "https://github.com/dxcufgb/FoundryVTT-reminders/releases/latest/download/module.json",
+  "download": "https://github.com/dxcufgb/FoundryVTT-reminders/releases/latest/download/module.zip",
+  "bugs": "https://github.com/dxcufgb/FoundryVTT-reminders/issues",
+  "readme": "https://github.com/dxcufgb/FoundryVTT-reminders#readme",
+  "license": "LICENSE",
+  "esmodules": [
+    "scripts/reminders.js"
+  ],
+  "styles": [
+    "styles/reminders.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ]
+}
