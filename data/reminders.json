@@ -1,0 +1,4043 @@
+{
+ "version": 1,
+ "matching": "An item counts as a reminder when its name matches an entry's name (or alias) and, in systems that say so (dnd5e), its activation is a legendary or lair action. match 'exact' ignores case, apostrophe style and text in parentheses; 'contains' matches anywhere in the item's name.",
+ "kinds": {
+  "legendary": "Legendary action: used right after another creature's turn, spending legendary action uses",
+  "lair": "Lair action (2014): used on initiative count 20, losing ties",
+  "custom": "Added by the GM from an item's context menu"
+ },
+ "features": [
+  {
+   "id": "2014-lair-aging-wave",
+   "name": "Aging Wave",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Androsphinx",
+    "Gynosphinx"
+   ],
+   "limit": "Each one can't be used again until the sphinx finishes a short or long rest.",
+   "effect": "Every creature in the lair makes a DC 15 Con save or ages 1d20 years older or younger (greater restoration reverses it).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-antimagic-shroud",
+   "name": "Antimagic Shroud",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Demilich",
+    "Acererak"
+   ],
+   "limit": "Acts only on a d20 roll of 11+; can't use the same effect two rounds in a row.",
+   "effect": "One creature within 60 ft is wrapped in a moving antimagic field until the next initiative 20.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-ceiling-collapse",
+   "name": "Ceiling Collapse",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult Blue Dragon",
+    "Ancient Blue Dragon"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "One creature within 120 ft makes a DC 15 Dex save or takes 3d6 bludgeoning, is knocked prone and buried (restrained, can't breathe; DC 10 Str action to escape).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-charming-fog",
+   "name": "Charming Fog",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult Green Dragon",
+    "Ancient Green Dragon"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "One creature within 120 ft makes a DC 15 Wis save or is charmed by the dragon until the next initiative 20.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-conductive-water",
+   "name": "Conductive Water",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Kraken"
+   ],
+   "limit": null,
+   "effect": "Creatures in water within 60 ft gain vulnerability to lightning until the next initiative 20.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-deny-healing",
+   "name": "Deny Healing",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Demilich",
+    "Acererak"
+   ],
+   "limit": "Acts only on a d20 roll of 11+; can't use the same effect two rounds in a row.",
+   "effect": "Any number of creatures within 30 ft can't regain HP until the next initiative 20.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-dream-banishment",
+   "name": "Dream Banishment",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult Gold Dragon",
+    "Ancient Gold Dragon"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "One creature within 120 ft makes a DC 15 Cha save or is banished to a dream plane until the next initiative 20 (contested Cha check to escape).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-electrified-water",
+   "name": "Electrified Water",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Kraken"
+   ],
+   "limit": null,
+   "effect": "Each creature within 120 ft makes a DC 23 Con save: 3d6 lightning, half on success.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-fog",
+   "name": "Fog",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult Bronze Dragon",
+    "Ancient Bronze Dragon",
+    "Adult Silver Dragon",
+    "Ancient Silver Dragon"
+   ],
+   "limit": null,
+   "effect": "Creates fog cloud (as the spell) until the next initiative 20.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-foresight",
+   "name": "Foresight",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult Gold Dragon",
+    "Ancient Gold Dragon"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "The dragon has advantage on attack rolls, ability checks and saves until the next initiative 20.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-freezing-fog",
+   "name": "Freezing Fog",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult White Dragon",
+    "Ancient White Dragon"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "20-ft-radius heavily obscuring fog within 120 ft; DC 10 Con save for 3d6 cold (half on success), and 3d6 cold to anyone ending a turn in it.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-gale",
+   "name": "Gale",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult Brass Dragon",
+    "Ancient Brass Dragon"
+   ],
+   "limit": null,
+   "effect": "Each creature within 60 ft makes a DC 15 Str save or is pushed 15 ft and knocked prone; disperses gas and puts out unprotected flames.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-grasping-roots",
+   "name": "Grasping Roots",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult Green Dragon",
+    "Ancient Green Dragon"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "20-ft radius within 120 ft becomes difficult terrain; DC 15 Str save or restrained by roots (DC 15 Str action to escape).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-grasping-tide",
+   "name": "Grasping Tide",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult Black Dragon",
+    "Ancient Black Dragon"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "Creatures on the ground within 20 ft of a pool (within 120 ft) make a DC 15 Str save or are pulled up to 20 ft into the water and knocked prone.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-grasping-tide-2",
+   "name": "Grasping Tide",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Aboleth"
+   ],
+   "limit": "Can't use again until it has used a different lair action.",
+   "effect": "Creatures on the ground within 20 ft of a pool (within 90 ft) make a DC 14 Str save or are pulled 20 ft into the water and knocked prone.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-grasping-walls",
+   "name": "Grasping Walls",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Beholder"
+   ],
+   "limit": "Can't repeat an effect until it has used them all, nor the same one two rounds in a row.",
+   "effect": "Walls within 120 ft sprout appendages; chosen creatures starting a turn within 10 ft make a DC 15 Dex save or are grappled (escape DC 15).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-ice-shards",
+   "name": "Ice Shards",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult White Dragon",
+    "Ancient White Dragon"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "Ranged attack (+7) against up to three creatures within 120 ft, 3d6 piercing each.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-ice-wall",
+   "name": "Ice Wall",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult White Dragon",
+    "Ancient White Dragon"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "Opaque ice wall up to 30 x 30 ft, 1 ft thick, within 120 ft; each 10-ft section AC 5, 30 HP, vulnerable to fire.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-icy-gust",
+   "name": "Icy Gust",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult Silver Dragon",
+    "Ancient Silver Dragon"
+   ],
+   "limit": null,
+   "effect": "Each creature within 120 ft makes a DC 15 Con save or takes 1d10 cold; disperses gas and puts out unprotected flames.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-insect-swarm",
+   "name": "Insect Swarm",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult Black Dragon",
+    "Ancient Black Dragon"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "20-ft-radius insect cloud within 120 ft, lightly obscured; DC 15 Con save for 3d6 piercing (half on success) when it appears, and 3d6 piercing to anyone ending a turn in it.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-lightning-arc",
+   "name": "Lightning Arc",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult Blue Dragon",
+    "Ancient Blue Dragon"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "A 5-ft line of lightning between two surfaces within 120 ft; DC 15 Dex save or 3d6 lightning.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-magical-darkness",
+   "name": "Magical Darkness",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult Black Dragon",
+    "Ancient Black Dragon"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "15-ft-radius sphere of magical darkness within 60 ft; darkvision can't see through it and it dispels overlapping light spells of 2nd level or lower.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-magma-geyser",
+   "name": "Magma Geyser",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult Red Dragon",
+    "Ancient Red Dragon"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "A 20-ft-high, 5-ft-radius geyser of magma within 120 ft; DC 15 Dex save, 6d6 fire (half on success).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-mud-pit",
+   "name": "Mud Pit",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult Copper Dragon",
+    "Ancient Copper Dragon"
+   ],
+   "limit": null,
+   "effect": "10-ft square within 120 ft turns to 3-ft-deep mud; DC 15 Dex save or restrained (DC 15 Str to escape, DC 20 once it hardens next round).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-negative-tether",
+   "name": "Negative Tether",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Lich"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "Tethers a creature within 30 ft: when the lich takes damage, the target makes a DC 18 Con save or takes half of it instead.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-phantasmal-force",
+   "name": "Phantasmal Force",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Aboleth"
+   ],
+   "limit": null,
+   "effect": "Casts phantasmal force (no components) on any number of creatures within 60 ft; it concentrates and can't use other lair actions meanwhile. A creature that resists is immune for 24 hours.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-planar-shift",
+   "name": "Planar Shift",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Androsphinx",
+    "Gynosphinx"
+   ],
+   "limit": "Each one can't be used again until the sphinx finishes a short or long rest.",
+   "effect": "The sphinx and up to seven creatures it can see in the lair are moved to another plane.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-psychic-conduit",
+   "name": "Psychic Conduit",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Aboleth"
+   ],
+   "limit": "Can't use again until it has used a different lair action.",
+   "effect": "Creatures standing in water within 90 ft make a DC 14 Wis save or take 2d6 psychic damage.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-recover-slot",
+   "name": "Recover Slot",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Lich"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "Rolls a d8 and regains a spent spell slot of that level or lower.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-sand-cloud",
+   "name": "Sand Cloud",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult Blue Dragon",
+    "Ancient Blue Dragon",
+    "Adult Brass Dragon",
+    "Ancient Brass Dragon"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "20-ft-radius sand cloud within 120 ft; DC 15 Con save or blinded for 1 minute (repeat the save each turn).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-sense-the-living",
+   "name": "Sense the Living",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Mummy Lord"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "Every undead in the lair can pinpoint living creatures within 120 ft until the next initiative 20.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-slime-floor",
+   "name": "Slime Floor",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Beholder"
+   ],
+   "limit": "Can't repeat an effect until it has used them all, nor the same one two rounds in a row.",
+   "effect": "A 50-ft square within 120 ft becomes slimy difficult terrain until the next initiative 20.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-spectral-appendages",
+   "name": "Spectral Appendages",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Death Tyrant"
+   ],
+   "limit": "Can't repeat an effect until all are used, nor the same one two rounds in a row.",
+   "effect": "Hostile creatures starting their turn within 10 ft of a wall make a DC 17 save or are grappled (escape DC 17) until the next initiative 20.",
+   "match": "exact",
+   "confirmed": false
+  },
+  {
+   "id": "2014-lair-spectral-eye",
+   "name": "Spectral Eye",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Death Tyrant"
+   ],
+   "limit": "Can't repeat an effect until all are used, nor the same one two rounds in a row.",
+   "effect": "A ghostly eye appears and fires one random eye ray (DC 17).",
+   "match": "exact",
+   "confirmed": false
+  },
+  {
+   "id": "2014-lair-spectral-eyes",
+   "name": "Spectral Eyes",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Death Tyrant"
+   ],
+   "limit": "Can't repeat an effect until all are used, nor the same one two rounds in a row.",
+   "effect": "A 50-ft cube fills with ghostly eyes and tentacles: lightly obscured and difficult terrain for others until the next initiative 20.",
+   "match": "exact",
+   "confirmed": false
+  },
+  {
+   "id": "2014-lair-spell-agony",
+   "name": "Spell Agony",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Mummy Lord"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "Until the next initiative 20, a non-undead casting a spell of 4th level or lower makes a DC 16 Con save or takes 1d6 necrotic per spell level and the spell fails.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-stone-spikes",
+   "name": "Stone Spikes",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult Copper Dragon",
+    "Ancient Copper Dragon"
+   ],
+   "limit": null,
+   "effect": "Spike growth (as the spell) in a 20-ft radius within 120 ft, until the dragon uses this again or dies.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-strong-current",
+   "name": "Strong Current",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Kraken"
+   ],
+   "limit": null,
+   "effect": "Each creature within 60 ft makes a DC 23 Str save: pushed up to 60 ft away on a failure, 10 ft on a success.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-thorn-wall",
+   "name": "Thorn Wall",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult Green Dragon",
+    "Ancient Green Dragon"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "Wall of thorns up to 60 ft long, 10 ft high, 5 ft thick, blocking sight; DC 15 Dex save or 4d8 piercing for creatures in its space or moving through it.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-thunderclap",
+   "name": "Thunderclap",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult Bronze Dragon",
+    "Ancient Bronze Dragon"
+   ],
+   "limit": null,
+   "effect": "20-ft radius around a point within 120 ft; DC 15 Con save or 1d10 thunder and deafened until the end of its next turn.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-time-shift",
+   "name": "Time Shift",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Androsphinx",
+    "Gynosphinx"
+   ],
+   "limit": "Each one can't be used again until the sphinx finishes a short or long rest.",
+   "effect": "The flow of time shifts so everything in the lair moves up to 10 years forward or back.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-time-skip",
+   "name": "Time Skip",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Androsphinx",
+    "Gynosphinx"
+   ],
+   "limit": "Each one can't be used again until the sphinx finishes a short or long rest.",
+   "effect": "Every creature in the lair rerolls initiative (the sphinx may choose not to).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-tomb-tremor",
+   "name": "Tomb Tremor",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Demilich",
+    "Acererak"
+   ],
+   "limit": "Acts only on a d20 roll of 11+; can't use the same effect two rounds in a row.",
+   "effect": "Each creature on the tomb floor makes a DC 19 Dex save or is knocked prone.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-tremor",
+   "name": "Tremor",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult Red Dragon",
+    "Ancient Red Dragon"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "Each other creature on the ground within 60 ft makes a DC 15 Dex save or is knocked prone.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-unturnable",
+   "name": "Unturnable",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Mummy Lord"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "Undead in the lair have advantage on saves against turn undead until the next initiative 20.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-vengeful-spirits",
+   "name": "Vengeful Spirits",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Lich"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "Spirits of the dead attack one creature within 60 ft: DC 18 Con save, 15d6 necrotic, half on success.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-volcanic-gas",
+   "name": "Volcanic Gas",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Adult Red Dragon",
+    "Ancient Red Dragon"
+   ],
+   "limit": "Can't use the same lair action two rounds in a row.",
+   "effect": "20-ft-radius gas cloud within 120 ft until next initiative 20; a creature starting its turn there makes a DC 13 Con save or is poisoned and incapacitated until the end of its turn.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-lair-wall-eye",
+   "name": "Wall Eye",
+   "kind": "lair",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Beholder"
+   ],
+   "limit": "Can't repeat an effect until it has used them all, nor the same one two rounds in a row.",
+   "effect": "An eye opens on a surface within 60 ft and fires one random eye ray at a target the beholder chooses.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-attack",
+   "name": "Attack",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Tarrasque"
+   ],
+   "limit": null,
+   "effect": "Makes one claw or tail attack.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-attack-2",
+   "name": "Attack",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Mummy Lord"
+   ],
+   "limit": null,
+   "effect": "Makes one Rotting Fist attack or uses Dreadful Glare.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-attack-3",
+   "name": "Attack",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Empyrean"
+   ],
+   "limit": null,
+   "effect": "Makes one attack.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-bite",
+   "name": "Bite",
+   "kind": "legendary",
+   "cost": 2,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Vampire"
+   ],
+   "limit": null,
+   "effect": "Makes one bite attack.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-blasphemous-word",
+   "name": "Blasphemous Word",
+   "kind": "legendary",
+   "cost": 2,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Mummy Lord"
+   ],
+   "limit": null,
+   "effect": "Each non-undead creature within 10 ft that can hear it makes a DC 16 Con save or is stunned until the end of the mummy lord's next turn.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-blinding-dust",
+   "name": "Blinding Dust",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Mummy Lord"
+   ],
+   "limit": null,
+   "effect": "Each creature within 5 ft makes a DC 16 Con save or is blinded until the end of its next turn.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-blinding-gaze",
+   "name": "Blinding Gaze",
+   "kind": "legendary",
+   "cost": 3,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Solar"
+   ],
+   "limit": null,
+   "effect": "One creature within 30 ft that can see it makes a DC 15 Con save or is blinded until magic removes it.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-bolster",
+   "name": "Bolster",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Empyrean"
+   ],
+   "limit": null,
+   "effect": "Non-hostile creatures within 120 ft can't be charmed or frightened and have advantage on checks and saves until its next turn.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-cantrip",
+   "name": "Cantrip",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Lich"
+   ],
+   "limit": null,
+   "effect": "Casts a cantrip.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-cast-a-spell",
+   "name": "Cast a Spell",
+   "kind": "legendary",
+   "cost": 3,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Androsphinx",
+    "Gynosphinx"
+   ],
+   "limit": null,
+   "effect": "Casts a prepared spell, using a slot as normal.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-channel-negative-energy",
+   "name": "Channel Negative Energy",
+   "kind": "legendary",
+   "cost": 2,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Mummy Lord"
+   ],
+   "limit": null,
+   "effect": "Creatures within 60 ft can't regain HP until the end of the mummy lord's next turn.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-chomp",
+   "name": "Chomp",
+   "kind": "legendary",
+   "cost": 2,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Tarrasque"
+   ],
+   "limit": null,
+   "effect": "Makes one bite attack or uses Swallow.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-claw-attack",
+   "name": "Claw Attack",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Androsphinx",
+    "Gynosphinx"
+   ],
+   "limit": null,
+   "effect": "Makes one claw attack.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-cloud-of-dust",
+   "name": "Cloud of Dust",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Demilich",
+    "Acererak"
+   ],
+   "limit": null,
+   "effect": "Each creature within 10 ft makes a DC 15 Con save or is blinded until the end of the demilich's next turn.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-detect",
+   "name": "Detect",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Adult Black Dragon",
+    "Adult Blue Dragon",
+    "Adult Brass Dragon",
+    "Adult Bronze Dragon",
+    "Adult Copper Dragon",
+    "Adult Gold Dragon",
+    "Adult Green Dragon",
+    "Adult Red Dragon",
+    "Adult Silver Dragon",
+    "Adult White Dragon",
+    "Ancient Black Dragon",
+    "Ancient Blue Dragon",
+    "Ancient Brass Dragon",
+    "Ancient Bronze Dragon",
+    "Ancient Copper Dragon",
+    "Ancient Gold Dragon",
+    "Ancient Green Dragon",
+    "Ancient Red Dragon",
+    "Ancient Silver Dragon",
+    "Ancient White Dragon",
+    "Aboleth",
+    "Adult Blue Dracolich"
+   ],
+   "limit": null,
+   "effect": "Makes a Wisdom (Perception) check.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-disrupt-life",
+   "name": "Disrupt Life",
+   "kind": "legendary",
+   "cost": 3,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Lich"
+   ],
+   "limit": null,
+   "effect": "Each non-undead creature within 20 ft makes a DC 18 Con save: 6d6 necrotic, half on success.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-energy-drain",
+   "name": "Energy Drain",
+   "kind": "legendary",
+   "cost": 2,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Demilich",
+    "Acererak"
+   ],
+   "limit": null,
+   "effect": "Each creature within 30 ft makes a DC 15 Con save or its HP maximum drops by 3d6 (dies at 0; greater restoration fixes).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-eye-ray",
+   "name": "Eye Ray",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Beholder"
+   ],
+   "limit": null,
+   "effect": "Fires one random eye ray (DC 16).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-eye-ray-2",
+   "name": "Eye Ray",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Death Tyrant"
+   ],
+   "limit": null,
+   "effect": "Fires one random eye ray (DC 17).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-flight",
+   "name": "Flight",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Demilich",
+    "Acererak"
+   ],
+   "limit": null,
+   "effect": "Flies up to half its fly speed.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-frightening-gaze",
+   "name": "Frightening Gaze",
+   "kind": "legendary",
+   "cost": 2,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Lich"
+   ],
+   "limit": null,
+   "effect": "One creature within 10 ft makes a DC 18 Wis save or is frightened for 1 minute; immune for 24 hours on a success.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-heal-self",
+   "name": "Heal Self",
+   "kind": "legendary",
+   "cost": 3,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Unicorn"
+   ],
+   "limit": null,
+   "effect": "Regains 2d8+2 HP.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-hooves",
+   "name": "Hooves",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Unicorn"
+   ],
+   "limit": null,
+   "effect": "Makes one hooves attack.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-ink-cloud",
+   "name": "Ink Cloud",
+   "kind": "legendary",
+   "cost": 3,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Kraken"
+   ],
+   "limit": null,
+   "effect": "Underwater only: 60-ft-radius ink cloud, heavily obscured; DC 23 Con save or 3d10 poison (half on success) when it appears.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-lightning-storm",
+   "name": "Lightning Storm",
+   "kind": "legendary",
+   "cost": 2,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Kraken"
+   ],
+   "limit": null,
+   "effect": "Uses Lightning Storm (three bolts, DC 23 Dex save, 4d10 lightning each).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-move",
+   "name": "Move",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Tarrasque"
+   ],
+   "limit": null,
+   "effect": "Moves up to half its speed.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-move-2",
+   "name": "Move",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Vampire"
+   ],
+   "limit": null,
+   "effect": "Moves up to its speed without provoking opportunity attacks.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-paralyzing-touch",
+   "name": "Paralyzing Touch",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Lich"
+   ],
+   "limit": null,
+   "effect": "Uses Paralyzing Touch (melee, cold damage, DC 18 Con save or paralyzed for 1 minute).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-psychic-drain",
+   "name": "Psychic Drain",
+   "kind": "legendary",
+   "cost": 2,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Aboleth"
+   ],
+   "limit": null,
+   "effect": "One creature it has charmed takes 3d6 psychic damage and the aboleth regains that many HP.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-searing-burst",
+   "name": "Searing Burst",
+   "kind": "legendary",
+   "cost": 2,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Solar"
+   ],
+   "limit": null,
+   "effect": "Creatures of its choice within 10 ft make a DC 23 Dex save: 4d6 fire + 4d6 radiant, half on success.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-shimmering-shield",
+   "name": "Shimmering Shield",
+   "kind": "legendary",
+   "cost": 2,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Unicorn"
+   ],
+   "limit": null,
+   "effect": "Itself or a creature within 60 ft gets +2 AC until the end of the unicorn's next turn.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-tail-attack",
+   "name": "Tail Attack",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Adult Black Dragon",
+    "Adult Blue Dragon",
+    "Adult Brass Dragon",
+    "Adult Bronze Dragon",
+    "Adult Copper Dragon",
+    "Adult Gold Dragon",
+    "Adult Green Dragon",
+    "Adult Red Dragon",
+    "Adult Silver Dragon",
+    "Adult White Dragon",
+    "Ancient Black Dragon",
+    "Ancient Blue Dragon",
+    "Ancient Brass Dragon",
+    "Ancient Bronze Dragon",
+    "Ancient Copper Dragon",
+    "Ancient Gold Dragon",
+    "Ancient Green Dragon",
+    "Ancient Red Dragon",
+    "Ancient Silver Dragon",
+    "Ancient White Dragon",
+    "Adult Blue Dracolich"
+   ],
+   "limit": null,
+   "effect": "Makes one tail attack.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-tail-swipe",
+   "name": "Tail Swipe",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Aboleth"
+   ],
+   "limit": null,
+   "effect": "Makes one tail attack.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-teleport",
+   "name": "Teleport",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Solar"
+   ],
+   "limit": null,
+   "effect": "Teleports up to 120 ft to an unoccupied space it can see.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-teleport-2",
+   "name": "Teleport",
+   "kind": "legendary",
+   "cost": 2,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Androsphinx",
+    "Gynosphinx"
+   ],
+   "limit": null,
+   "effect": "Teleports, with its gear, up to 120 ft to an unoccupied space it can see.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-tentacle-attack-or-fling",
+   "name": "Tentacle Attack or Fling",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Kraken"
+   ],
+   "limit": null,
+   "effect": "Makes one tentacle attack or uses Fling.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-trembling-strike",
+   "name": "Trembling Strike",
+   "kind": "legendary",
+   "cost": 2,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Empyrean"
+   ],
+   "limit": null,
+   "effect": "Strikes the ground: other creatures on the ground within 60 ft make a DC 25 Str save or are knocked prone.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-unarmed-strike",
+   "name": "Unarmed Strike",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Vampire"
+   ],
+   "limit": null,
+   "effect": "Makes one unarmed strike.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-vile-curse",
+   "name": "Vile Curse",
+   "kind": "legendary",
+   "cost": 3,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Demilich",
+    "Acererak"
+   ],
+   "limit": null,
+   "effect": "One creature within 30 ft makes a DC 15 Wis save or is cursed: disadvantage on attacks and saves (repeat the save each turn).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-whirlwind-of-sand",
+   "name": "Whirlwind of Sand",
+   "kind": "legendary",
+   "cost": 2,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Mummy Lord"
+   ],
+   "limit": null,
+   "effect": "Turns into a whirlwind of sand, moves up to 60 ft and reverts; immune to all damage while in that form.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-wing-attack",
+   "name": "Wing Attack",
+   "kind": "legendary",
+   "cost": 2,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Adult Black Dragon",
+    "Adult Blue Dragon",
+    "Adult Brass Dragon",
+    "Adult Bronze Dragon",
+    "Adult Copper Dragon",
+    "Adult Gold Dragon",
+    "Adult Green Dragon",
+    "Adult Red Dragon",
+    "Adult Silver Dragon",
+    "Adult White Dragon",
+    "Adult Blue Dracolich"
+   ],
+   "limit": null,
+   "effect": "Beats its wings: each creature within 10 ft makes a Dex save or takes bludgeoning damage and is knocked prone; then the dragon flies up to half its fly speed.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-legendary-wing-attack-2",
+   "name": "Wing Attack",
+   "kind": "legendary",
+   "cost": 2,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Ancient Black Dragon",
+    "Ancient Blue Dragon",
+    "Ancient Brass Dragon",
+    "Ancient Bronze Dragon",
+    "Ancient Copper Dragon",
+    "Ancient Gold Dragon",
+    "Ancient Green Dragon",
+    "Ancient Red Dragon",
+    "Ancient Silver Dragon",
+    "Ancient White Dragon"
+   ],
+   "limit": null,
+   "effect": "Beats its wings: each creature within 15 ft makes a Dex save or takes bludgeoning damage and is knocked prone; then the dragon flies up to half its fly speed.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-arcane-prowl",
+   "name": "Arcane Prowl",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Sphinx of Lore",
+    "Sphinx of Valor"
+   ],
+   "limit": null,
+   "effect": "Teleports up to 30 ft and makes one Claw attack.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-banish",
+   "name": "Banish",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Adult Gold Dragon",
+    "Ancient Gold Dragon"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "One creature within 120 ft makes a Cha save or takes force damage, is incapacitated and sent to a harmless demiplane until the start of the dragon's next turn.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-beguile",
+   "name": "Beguile",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Vampire"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "Casts Command (no components, Cha-based).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-blazing-light",
+   "name": "Blazing Light",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Adult Brass Dragon",
+    "Ancient Brass Dragon"
+   ],
+   "limit": null,
+   "effect": "Casts Scorching Ray.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-blinding-gaze",
+   "name": "Blinding Gaze",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Solar"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "One creature within 120 ft makes a Con save or is blinded for 1 minute.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-charging-horn",
+   "name": "Charging Horn",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Unicorn"
+   ],
+   "limit": null,
+   "effect": "Moves up to half its Speed without provoking opportunity attacks and makes one Radiant Horn attack.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-chill",
+   "name": "Chill",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Adult Silver Dragon",
+    "Ancient Silver Dragon"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "Casts Hold Monster.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-chomp",
+   "name": "Chomp",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024",
+   "creatures": [
+    "Beholder"
+   ],
+   "limit": null,
+   "effect": "Makes two Bite attacks.",
+   "match": "exact",
+   "confirmed": false
+  },
+  {
+   "id": "2024-legendary-cloaked-flight",
+   "name": "Cloaked Flight",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Adult Blue Dragon",
+    "Ancient Blue Dragon"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "Casts Invisibility on itself and flies up to half its fly Speed.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-cloud-of-insects",
+   "name": "Cloud of Insects",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Adult Black Dragon",
+    "Ancient Black Dragon"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "One creature within 120 ft makes a Dex save or takes poison damage and has disadvantage on Concentration saves until the end of its next turn.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-cold-gale",
+   "name": "Cold Gale",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Adult Silver Dragon",
+    "Ancient Silver Dragon"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "60-ft line: Dex save or cold damage and pushed away from the dragon (half damage only on success).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-commanding-presence",
+   "name": "Commanding Presence",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Adult Red Dragon",
+    "Ancient Red Dragon"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "Casts Command (level 2).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-deathless-strike",
+   "name": "Deathless Strike",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Vampire"
+   ],
+   "limit": null,
+   "effect": "Moves up to half its Speed and makes one Grave Strike attack.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-deathly-teleport",
+   "name": "Deathly Teleport",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Lich"
+   ],
+   "limit": null,
+   "effect": "Teleports up to 60 ft; creatures near where it left take necrotic damage.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-decay",
+   "name": "Decay",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024",
+   "creatures": [
+    "Blob of Annihilation"
+   ],
+   "limit": null,
+   "effect": "Every creature it has engulfed takes necrotic damage.",
+   "match": "exact",
+   "confirmed": false
+  },
+  {
+   "id": "2024-legendary-dimension-door",
+   "name": "Dimension Door",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024",
+   "creatures": [
+    "Arch-hag"
+   ],
+   "limit": "Only one spell per round as a legendary action.",
+   "effect": "Casts Dimension Door.",
+   "match": "exact",
+   "confirmed": false
+  },
+  {
+   "id": "2024-legendary-disrupt-life",
+   "name": "Disrupt Life",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Lich"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "Non-undead creatures within 20 ft make a Con save: necrotic damage, half on success.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-dread-command",
+   "name": "Dread Command",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Mummy Lord"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "Casts Command (level 2).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-eruption",
+   "name": "Eruption",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024",
+   "creatures": [
+    "Elemental Cataclysm"
+   ],
+   "limit": null,
+   "effect": "Elemental eruption (details: see the book).",
+   "match": "exact",
+   "confirmed": false
+  },
+  {
+   "id": "2024-legendary-eye-ray",
+   "name": "Eye Ray",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024",
+   "creatures": [
+    "Beholder",
+    "Death Tyrant"
+   ],
+   "limit": null,
+   "effect": "Fires one random Eye Ray.",
+   "match": "exact",
+   "confirmed": false
+  },
+  {
+   "id": "2024-legendary-feral-strike",
+   "name": "Feral Strike",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024",
+   "creatures": [
+    "Animal Lord"
+   ],
+   "limit": null,
+   "effect": "Moves up to its Speed and makes one Rend attack.",
+   "match": "exact",
+   "confirmed": false
+  },
+  {
+   "id": "2024-legendary-fiery-rays",
+   "name": "Fiery Rays",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Adult Red Dragon",
+    "Ancient Red Dragon"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "Casts Scorching Ray.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-freezing-burst",
+   "name": "Freezing Burst",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Adult White Dragon",
+    "Ancient White Dragon"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "30-ft-radius sphere within 120 ft: Con save or cold damage and Speed 0 until the end of the target's next turn.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-frightening-gaze",
+   "name": "Frightening Gaze",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Lich"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "Casts Fear.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-frightful-presence",
+   "name": "Frightful Presence",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Adult Black Dragon",
+    "Adult White Dragon",
+    "Ancient Black Dragon",
+    "Ancient White Dragon"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "Casts Fear (no Material components).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-giggling-magic",
+   "name": "Giggling Magic",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Adult Copper Dragon",
+    "Ancient Copper Dragon"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "One creature makes a Cha save or takes psychic damage and subtracts 1d6 from its ability checks and attack rolls until the end of its next turn.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-glare",
+   "name": "Glare",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Mummy Lord"
+   ],
+   "limit": null,
+   "effect": "Uses Dreadful Glare.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-grave-dust-flight",
+   "name": "Grave-Dust Flight",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024",
+   "creatures": [
+    "Demilich"
+   ],
+   "limit": null,
+   "effect": "Flies and kicks up blinding grave dust.",
+   "match": "exact",
+   "confirmed": false
+  },
+  {
+   "id": "2024-legendary-guiding-light",
+   "name": "Guiding Light",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Adult Bronze Dragon",
+    "Adult Gold Dragon",
+    "Ancient Bronze Dragon",
+    "Ancient Gold Dragon"
+   ],
+   "limit": null,
+   "effect": "Casts Guiding Bolt (level 2).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-hypnotic-pattern",
+   "name": "Hypnotic Pattern",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024",
+   "creatures": [
+    "Arch-hag"
+   ],
+   "limit": "Only one spell per round as a legendary action.",
+   "effect": "Casts Hypnotic Pattern (Wis save or charmed and incapacitated).",
+   "match": "exact",
+   "confirmed": false
+  },
+  {
+   "id": "2024-legendary-lash",
+   "name": "Lash",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Aboleth"
+   ],
+   "limit": null,
+   "effect": "Makes one Tentacle attack.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-mind-invasion",
+   "name": "Mind Invasion",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Adult Green Dragon",
+    "Ancient Green Dragon"
+   ],
+   "limit": null,
+   "effect": "Casts Mind Spike (level 3).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-mind-jolt",
+   "name": "Mind Jolt",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Adult Copper Dragon",
+    "Ancient Copper Dragon"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "Casts Mind Spike (level 4).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-necrotic-strike",
+   "name": "Necrotic Strike",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Mummy Lord"
+   ],
+   "limit": null,
+   "effect": "Makes one Rotting Fist or Channel Negative Energy attack.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-noxious-miasma",
+   "name": "Noxious Miasma",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Adult Green Dragon",
+    "Ancient Green Dragon"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "Sphere within 90 ft: Con save or poison damage and -2 AC until the end of the target's next turn.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-onslaught",
+   "name": "Onslaught",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Tarrasque"
+   ],
+   "limit": null,
+   "effect": "Moves up to half its Speed and makes one Claw or Tail attack.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-pounce",
+   "name": "Pounce",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Adult Black Dragon",
+    "Adult Brass Dragon",
+    "Adult Bronze Dragon",
+    "Adult Copper Dragon",
+    "Adult Gold Dragon",
+    "Adult Green Dragon",
+    "Adult Red Dragon",
+    "Adult Silver Dragon",
+    "Adult White Dragon",
+    "Ancient Black Dragon",
+    "Ancient Brass Dragon",
+    "Ancient Bronze Dragon",
+    "Ancient Copper Dragon",
+    "Ancient Gold Dragon",
+    "Ancient Green Dragon",
+    "Ancient Red Dragon",
+    "Ancient Silver Dragon",
+    "Ancient White Dragon"
+   ],
+   "limit": null,
+   "effect": "Moves up to half its Speed and makes one Rend attack.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-psychic-drain",
+   "name": "Psychic Drain",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Aboleth"
+   ],
+   "limit": null,
+   "effect": "If it has a creature charmed or grappled, deals psychic damage to it and regains HP.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-radiant-teleport",
+   "name": "Radiant Teleport",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Solar"
+   ],
+   "limit": null,
+   "effect": "Teleports up to 60 ft; creatures within 10 ft of its destination make a DC 25 Dex save or take radiant damage (half on success).",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-rumbling-movement",
+   "name": "Rumbling Movement",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024",
+   "creatures": [
+    "Elemental Cataclysm"
+   ],
+   "limit": null,
+   "effect": "Moves up to its Speed; creatures within 5 ft of its path make a DC 23 Con save or fall prone.",
+   "match": "exact",
+   "confirmed": false
+  },
+  {
+   "id": "2024-legendary-scorching-sands",
+   "name": "Scorching Sands",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Adult Brass Dragon",
+    "Ancient Brass Dragon"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "One creature within 120 ft makes a Dex save or takes fire damage and has its Speed halved until the end of its next turn.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-shimmering-shield",
+   "name": "Shimmering Shield",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Unicorn"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "Itself or a creature within 60 ft gains temporary HP and +2 AC until the end of the unicorn's next turn.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-shockwave-of-glory",
+   "name": "Shockwave of Glory",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024",
+   "creatures": [
+    "Empyrean"
+   ],
+   "limit": null,
+   "effect": "Burst of glory: Con save or force damage and knocked prone.",
+   "match": "exact",
+   "confirmed": false
+  },
+  {
+   "id": "2024-legendary-sonic-boom",
+   "name": "Sonic Boom",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Adult Blue Dragon",
+    "Ancient Blue Dragon"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "Casts Shatter.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-spectral-claw",
+   "name": "Spectral Claw",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024",
+   "creatures": [
+    "Arch-hag"
+   ],
+   "limit": null,
+   "effect": "One long-reach claw attack (force damage, target knocked prone).",
+   "match": "exact",
+   "confirmed": false
+  },
+  {
+   "id": "2024-legendary-storm-bolt",
+   "name": "Storm Bolt",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Kraken"
+   ],
+   "limit": null,
+   "effect": "Uses Lightning Strike.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-tail-swipe",
+   "name": "Tail Swipe",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Adult Blue Dragon",
+    "Ancient Blue Dragon"
+   ],
+   "limit": null,
+   "effect": "Makes one Rend attack.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-thunderclap",
+   "name": "Thunderclap",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Adult Bronze Dragon",
+    "Ancient Bronze Dragon"
+   ],
+   "limit": null,
+   "effect": "20-ft-radius sphere within 90 ft: Con save or thunder damage and deafened until the end of the target's next turn.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-toxic-ink",
+   "name": "Toxic Ink",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Kraken"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "Underwater: creatures within 15 ft make a Con save or are blinded and poisoned until the end of its next turn; then it moves up to its Speed.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-weight-of-years",
+   "name": "Weight of Years",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Sphinx of Lore",
+    "Sphinx of Valor"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "One creature within 120 ft makes a DC 16 Con save or gains 1 Exhaustion level and looks 3d10 years older.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2024-legendary-world-shaking-movement",
+   "name": "World-Shaking Movement",
+   "kind": "legendary",
+   "cost": 1,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Tarrasque"
+   ],
+   "limit": "Can't take this action again until the start of its next turn.",
+   "effect": "Moves up to its Speed; creatures within 60 ft of where it stops lose Concentration and, if Medium or smaller, fall prone.",
+   "match": "exact",
+   "confirmed": true
+  }
+ ],
+ "creatures": [
+  {
+   "name": "Aboleth",
+   "cr": 10,
+   "type": "aberration",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": null,
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Phantasmal Force",
+     "Grasping Tide",
+     "Psychic Conduit"
+    ]
+   },
+   "regionalEffects": [
+    "Underground surfaces within 1 mile are slimy difficult terrain.",
+    "Water within 1 mile is fouled; its enemies who drink it vomit.",
+    "Can project an illusory image of itself within 1 mile."
+   ],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Acererak",
+   "cr": 21,
+   "type": "undead",
+   "edition": "2014",
+   "source": "MM 2014",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": null,
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Tomb Tremor",
+     "Antimagic Shroud",
+     "Deny Healing"
+    ],
+    "cr": 23
+   },
+   "regionalEffects": [
+    "A non-evil creature takes 3d10 necrotic the first time it enters the tomb.",
+    "Monsters in the tomb have advantage on saves against charm, fear and turn undead.",
+    "Teleport and planar travel into or out of the tomb fail."
+   ],
+   "confirmed": false,
+   "notes": "Demilich variant; also has Trap Soul as a regular action."
+  },
+  {
+   "name": "Adult Black Dragon",
+   "cr": 14,
+   "type": "dragon",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Grasping Tide",
+     "Insect Swarm",
+     "Magical Darkness"
+    ],
+    "rule": "Can't use the same lair action two rounds in a row."
+   },
+   "regionalEffects": [
+    "Land within 6 miles takes twice as long to cross (thick plants, mud).",
+    "Water within 1 mile is fouled; the dragon's enemies who drink it vomit.",
+    "Fog lightly obscures land within 6 miles."
+   ],
+   "confirmed": true,
+   "notes": "Lair actions and regional effects are in the Monster Manual, not the SRD."
+  },
+  {
+   "name": "Adult Blue Dracolich",
+   "cr": 17,
+   "type": "undead",
+   "edition": "2014",
+   "source": "MM 2014",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Adult Blue Dragon",
+   "cr": 16,
+   "type": "dragon",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Ceiling Collapse",
+     "Sand Cloud",
+     "Lightning Arc"
+    ],
+    "rule": "Can't use the same lair action two rounds in a row."
+   },
+   "regionalEffects": [
+    "Thunderstorms within 6 miles.",
+    "Dust devils (air elementals that can't fly) roam within 6 miles.",
+    "Hidden sinkholes near the lair (DC 20 Perception to spot; DC 15 Dex save or fall 1d6 x 10 ft)."
+   ],
+   "confirmed": true,
+   "notes": "Lair actions and regional effects are in the Monster Manual, not the SRD."
+  },
+  {
+   "name": "Adult Brass Dragon",
+   "cr": 13,
+   "type": "dragon",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Gale",
+     "Sand Cloud"
+    ],
+    "rule": null
+   },
+   "regionalEffects": [
+    "Tracks within 6 miles lead to shelter and water and away from places the dragon guards.",
+    "Harmless illusory monsters within 1 mile (DC 20 Investigation reveals).",
+    "The dragon senses intelligent creatures within 30 ft of water within 1 mile."
+   ],
+   "confirmed": true,
+   "notes": "Lair actions and regional effects are in the Monster Manual, not the SRD."
+  },
+  {
+   "name": "Adult Bronze Dragon",
+   "cr": 15,
+   "type": "dragon",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Fog",
+     "Thunderclap"
+    ],
+    "rule": null
+   },
+   "regionalEffects": [
+    "Once a day, control weather within 6 miles.",
+    "Underwater plants within 6 miles turn brilliant colours.",
+    "Illusory sounds throughout the lair."
+   ],
+   "confirmed": true,
+   "notes": "Lair actions and regional effects are in the Monster Manual, not the SRD."
+  },
+  {
+   "name": "Adult Copper Dragon",
+   "cr": 14,
+   "type": "dragon",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Stone Spikes",
+     "Mud Pit"
+    ],
+    "rule": null
+   },
+   "regionalEffects": [
+    "Carvings of the dragon's smiling face appear in stone within 6 miles.",
+    "Tiny beasts within 1 mile speak Draconic and praise the dragon.",
+    "Intelligent creatures within 1 mile are prone to fits of giggling."
+   ],
+   "confirmed": true,
+   "notes": "Lair actions and regional effects are in the Monster Manual, not the SRD."
+  },
+  {
+   "name": "Adult Gold Dragon",
+   "cr": 17,
+   "type": "dragon",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Foresight",
+     "Dream Banishment"
+    ],
+    "rule": "Can't use the same lair action two rounds in a row."
+   },
+   "regionalEffects": [
+    "Speaks to sleeping creatures within 6 miles through dreams.",
+    "Opalescent mist within 6 miles warns of nearby evil.",
+    "Gems and pearls within 1 mile shed dim light."
+   ],
+   "confirmed": true,
+   "notes": "Lair actions and regional effects are in the Monster Manual, not the SRD."
+  },
+  {
+   "name": "Adult Green Dragon",
+   "cr": 15,
+   "type": "dragon",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Grasping Roots",
+     "Thorn Wall",
+     "Charming Fog"
+    ],
+    "rule": "Can't use the same lair action two rounds in a row."
+   },
+   "regionalEffects": [
+    "Thicket mazes within 1 mile act as 10-ft walls (DC 15 Dex save or 1d6 piercing on contact).",
+    "The dragon leaves no trail within 1 mile and plants never hinder it.",
+    "Rodents and birds within 1 mile are its spies."
+   ],
+   "confirmed": true,
+   "notes": "Lair actions and regional effects are in the Monster Manual, not the SRD."
+  },
+  {
+   "name": "Adult Red Dragon",
+   "cr": 17,
+   "type": "dragon",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Magma Geyser",
+     "Tremor",
+     "Volcanic Gas"
+    ],
+    "rule": "Can't use the same lair action two rounds in a row."
+   },
+   "regionalEffects": [
+    "Small earthquakes within 6 miles.",
+    "Water within 1 mile is hot and sulfurous.",
+    "Rocky fissures within 1 mile form portals to the Elemental Plane of Fire."
+   ],
+   "confirmed": true,
+   "notes": "Lair actions and regional effects are in the Monster Manual, not the SRD."
+  },
+  {
+   "name": "Adult Silver Dragon",
+   "cr": 16,
+   "type": "dragon",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Fog",
+     "Icy Gust"
+    ],
+    "rule": null
+   },
+   "regionalEffects": [
+    "Once a day, control weather within 6 miles.",
+    "Non-evil creatures falling within 1 mile drop slowly and take no falling damage.",
+    "Fog and clouds in the lair can be made solid as stone."
+   ],
+   "confirmed": true,
+   "notes": "Lair actions and regional effects are in the Monster Manual, not the SRD."
+  },
+  {
+   "name": "Adult White Dragon",
+   "cr": 13,
+   "type": "dragon",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Freezing Fog",
+     "Ice Shards",
+     "Ice Wall"
+    ],
+    "rule": "Can't use the same lair action two rounds in a row."
+   },
+   "regionalEffects": [
+    "Chilly fog lightly obscures land within 6 miles.",
+    "Freezing precipitation (and blizzards while it rests) within 6 miles.",
+    "Ice walls in the lair that the dragon can pass through."
+   ],
+   "confirmed": true,
+   "notes": "Lair actions and regional effects are in the Monster Manual, not the SRD."
+  },
+  {
+   "name": "Ancient Black Dragon",
+   "cr": 21,
+   "type": "dragon",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Grasping Tide",
+     "Insect Swarm",
+     "Magical Darkness"
+    ],
+    "rule": "Can't use the same lair action two rounds in a row."
+   },
+   "regionalEffects": [
+    "Land within 6 miles takes twice as long to cross (thick plants, mud).",
+    "Water within 1 mile is fouled; the dragon's enemies who drink it vomit.",
+    "Fog lightly obscures land within 6 miles."
+   ],
+   "confirmed": true,
+   "notes": "Lair actions and regional effects are in the Monster Manual, not the SRD."
+  },
+  {
+   "name": "Ancient Blue Dragon",
+   "cr": 23,
+   "type": "dragon",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Ceiling Collapse",
+     "Sand Cloud",
+     "Lightning Arc"
+    ],
+    "rule": "Can't use the same lair action two rounds in a row."
+   },
+   "regionalEffects": [
+    "Thunderstorms within 6 miles.",
+    "Dust devils (air elementals that can't fly) roam within 6 miles.",
+    "Hidden sinkholes near the lair (DC 20 Perception to spot; DC 15 Dex save or fall 1d6 x 10 ft)."
+   ],
+   "confirmed": true,
+   "notes": "Lair actions and regional effects are in the Monster Manual, not the SRD."
+  },
+  {
+   "name": "Ancient Brass Dragon",
+   "cr": 20,
+   "type": "dragon",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Gale",
+     "Sand Cloud"
+    ],
+    "rule": null
+   },
+   "regionalEffects": [
+    "Tracks within 6 miles lead to shelter and water and away from places the dragon guards.",
+    "Harmless illusory monsters within 1 mile (DC 20 Investigation reveals).",
+    "The dragon senses intelligent creatures within 30 ft of water within 1 mile."
+   ],
+   "confirmed": true,
+   "notes": "Lair actions and regional effects are in the Monster Manual, not the SRD."
+  },
+  {
+   "name": "Ancient Bronze Dragon",
+   "cr": 22,
+   "type": "dragon",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Fog",
+     "Thunderclap"
+    ],
+    "rule": null
+   },
+   "regionalEffects": [
+    "Once a day, control weather within 6 miles.",
+    "Underwater plants within 6 miles turn brilliant colours.",
+    "Illusory sounds throughout the lair."
+   ],
+   "confirmed": true,
+   "notes": "Lair actions and regional effects are in the Monster Manual, not the SRD."
+  },
+  {
+   "name": "Ancient Copper Dragon",
+   "cr": 21,
+   "type": "dragon",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Stone Spikes",
+     "Mud Pit"
+    ],
+    "rule": null
+   },
+   "regionalEffects": [
+    "Carvings of the dragon's smiling face appear in stone within 6 miles.",
+    "Tiny beasts within 1 mile speak Draconic and praise the dragon.",
+    "Intelligent creatures within 1 mile are prone to fits of giggling."
+   ],
+   "confirmed": true,
+   "notes": "Lair actions and regional effects are in the Monster Manual, not the SRD."
+  },
+  {
+   "name": "Ancient Gold Dragon",
+   "cr": 24,
+   "type": "dragon",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Foresight",
+     "Dream Banishment"
+    ],
+    "rule": "Can't use the same lair action two rounds in a row."
+   },
+   "regionalEffects": [
+    "Speaks to sleeping creatures within 6 miles through dreams.",
+    "Opalescent mist within 6 miles warns of nearby evil.",
+    "Gems and pearls within 1 mile shed dim light."
+   ],
+   "confirmed": true,
+   "notes": "Lair actions and regional effects are in the Monster Manual, not the SRD."
+  },
+  {
+   "name": "Ancient Green Dragon",
+   "cr": 22,
+   "type": "dragon",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Grasping Roots",
+     "Thorn Wall",
+     "Charming Fog"
+    ],
+    "rule": "Can't use the same lair action two rounds in a row."
+   },
+   "regionalEffects": [
+    "Thicket mazes within 1 mile act as 10-ft walls (DC 15 Dex save or 1d6 piercing on contact).",
+    "The dragon leaves no trail within 1 mile and plants never hinder it.",
+    "Rodents and birds within 1 mile are its spies."
+   ],
+   "confirmed": true,
+   "notes": "Lair actions and regional effects are in the Monster Manual, not the SRD."
+  },
+  {
+   "name": "Ancient Red Dragon",
+   "cr": 24,
+   "type": "dragon",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Magma Geyser",
+     "Tremor",
+     "Volcanic Gas"
+    ],
+    "rule": "Can't use the same lair action two rounds in a row."
+   },
+   "regionalEffects": [
+    "Small earthquakes within 6 miles.",
+    "Water within 1 mile is hot and sulfurous.",
+    "Rocky fissures within 1 mile form portals to the Elemental Plane of Fire."
+   ],
+   "confirmed": true,
+   "notes": "Lair actions and regional effects are in the Monster Manual, not the SRD."
+  },
+  {
+   "name": "Ancient Silver Dragon",
+   "cr": 23,
+   "type": "dragon",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Fog",
+     "Icy Gust"
+    ],
+    "rule": null
+   },
+   "regionalEffects": [
+    "Once a day, control weather within 6 miles.",
+    "Non-evil creatures falling within 1 mile drop slowly and take no falling damage.",
+    "Fog and clouds in the lair can be made solid as stone."
+   ],
+   "confirmed": true,
+   "notes": "Lair actions and regional effects are in the Monster Manual, not the SRD."
+  },
+  {
+   "name": "Ancient White Dragon",
+   "cr": 20,
+   "type": "dragon",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Freezing Fog",
+     "Ice Shards",
+     "Ice Wall"
+    ],
+    "rule": "Can't use the same lair action two rounds in a row."
+   },
+   "regionalEffects": [
+    "Chilly fog lightly obscures land within 6 miles.",
+    "Freezing precipitation (and blizzards while it rests) within 6 miles.",
+    "Ice walls in the lair that the dragon can pass through."
+   ],
+   "confirmed": true,
+   "notes": "Lair actions and regional effects are in the Monster Manual, not the SRD."
+  },
+  {
+   "name": "Androsphinx",
+   "cr": 17,
+   "type": "monstrosity",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": null,
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Time Skip",
+     "Aging Wave",
+     "Time Shift",
+     "Planar Shift"
+    ]
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Beholder",
+   "cr": 13,
+   "type": "aberration",
+   "edition": "2014",
+   "source": "MM 2014",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": null,
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Slime Floor",
+     "Grasping Walls",
+     "Wall Eye"
+    ],
+    "cr": 14
+   },
+   "regionalEffects": [
+    "Creatures within 1 mile feel watched.",
+    "While it sleeps, minor reality warps appear within 1 mile."
+   ],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Death Tyrant",
+   "cr": 14,
+   "type": "undead",
+   "edition": "2014",
+   "source": "MM 2014",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": null,
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Spectral Eyes",
+     "Spectral Appendages",
+     "Spectral Eye"
+    ],
+    "cr": 15
+   },
+   "regionalEffects": [
+    "Creatures within 1 mile feel watched.",
+    "Creatures resting within 1 mile may be struck by an eye ray in their dreams."
+   ],
+   "confirmed": false,
+   "notes": null
+  },
+  {
+   "name": "Demilich",
+   "cr": 18,
+   "type": "undead",
+   "edition": "2014",
+   "source": "MM 2014",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": null,
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Tomb Tremor",
+     "Antimagic Shroud",
+     "Deny Healing"
+    ],
+    "cr": 20
+   },
+   "regionalEffects": [
+    "A non-evil creature takes 3d10 necrotic the first time it enters the tomb.",
+    "Monsters in the tomb have advantage on saves against charm, fear and turn undead.",
+    "Teleport and planar travel into or out of the tomb fail."
+   ],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Empyrean",
+   "cr": 23,
+   "type": "celestial (titan)",
+   "edition": "2014",
+   "source": "MM 2014",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": null,
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Gynosphinx",
+   "cr": 11,
+   "type": "monstrosity",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": null,
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Time Skip",
+     "Aging Wave",
+     "Time Shift",
+     "Planar Shift"
+    ]
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Kraken",
+   "cr": 23,
+   "type": "monstrosity (titan)",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": null,
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Strong Current",
+     "Conductive Water",
+     "Electrified Water"
+    ]
+   },
+   "regionalEffects": [
+    "Can cast control weather at will within 6 miles.",
+    "Simple water elementals form within 6 miles.",
+    "Low-Int aquatic creatures within 6 miles are charmed by it."
+   ],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Lich",
+   "cr": 21,
+   "type": "undead",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Recover Slot",
+     "Negative Tether",
+     "Vengeful Spirits"
+    ],
+    "cr": 22
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Mummy Lord",
+   "cr": 15,
+   "type": "undead",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": null,
+   "lair": {
+    "initiative": 20,
+    "actions": [
+     "Sense the Living",
+     "Unturnable",
+     "Spell Agony"
+    ],
+    "cr": 16
+   },
+   "regionalEffects": [
+    "Food rots and drinks spoil in the lair.",
+    "Others' divinations in the lair have a 25% chance to mislead.",
+    "Anyone taking treasure is cursed (disadvantage on saves) until it's returned."
+   ],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Solar",
+   "cr": 21,
+   "type": "celestial",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": null,
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Tarrasque",
+   "cr": 30,
+   "type": "monstrosity (titan)",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Unicorn",
+   "cr": 5,
+   "type": "celestial",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": null,
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [
+    "Nonmagical open flames go out (closed lanterns still work).",
+    "Native creatures have advantage on Stealth to hide.",
+    "Good creatures healing good creatures heal the maximum.",
+    "Curses on good creatures are suppressed."
+   ],
+   "confirmed": true,
+   "notes": "No lair actions, only regional effects."
+  },
+  {
+   "name": "Vampire",
+   "cr": 13,
+   "type": "undead",
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 3
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [
+    "More bats, rats and wolves in the region.",
+    "Plants within 500 ft wither.",
+    "Shadows within 500 ft look gaunt and sometimes move.",
+    "Creeping fog within 500 ft takes eerie shapes."
+   ],
+   "confirmed": true,
+   "notes": "No lair actions in the Monster Manual (Strahd has his own in Curse of Strahd)."
+  },
+  {
+   "name": "Aboleth",
+   "cr": 10,
+   "type": "aberration",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Adult Black Dragon",
+   "cr": 14,
+   "type": "dragon",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": "2024: no lair actions; extra legendary action and resistance in its lair, plus regional effects in the book."
+  },
+  {
+   "name": "Adult Blue Dragon",
+   "cr": 16,
+   "type": "dragon",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": "2024: no lair actions; extra legendary action and resistance in its lair, plus regional effects in the book."
+  },
+  {
+   "name": "Adult Brass Dragon",
+   "cr": 13,
+   "type": "dragon",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": "2024: no lair actions; extra legendary action and resistance in its lair, plus regional effects in the book."
+  },
+  {
+   "name": "Adult Bronze Dragon",
+   "cr": 15,
+   "type": "dragon",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": "2024: no lair actions; extra legendary action and resistance in its lair, plus regional effects in the book."
+  },
+  {
+   "name": "Adult Copper Dragon",
+   "cr": 14,
+   "type": "dragon",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": "2024: no lair actions; extra legendary action and resistance in its lair, plus regional effects in the book."
+  },
+  {
+   "name": "Adult Gold Dragon",
+   "cr": 17,
+   "type": "dragon",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": "2024: no lair actions; extra legendary action and resistance in its lair, plus regional effects in the book."
+  },
+  {
+   "name": "Adult Green Dragon",
+   "cr": 15,
+   "type": "dragon",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": "2024: no lair actions; extra legendary action and resistance in its lair, plus regional effects in the book."
+  },
+  {
+   "name": "Adult Red Dragon",
+   "cr": 17,
+   "type": "dragon",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": "2024: no lair actions; extra legendary action and resistance in its lair, plus regional effects in the book."
+  },
+  {
+   "name": "Adult Silver Dragon",
+   "cr": 16,
+   "type": "dragon",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": "2024: no lair actions; extra legendary action and resistance in its lair, plus regional effects in the book."
+  },
+  {
+   "name": "Adult White Dragon",
+   "cr": 13,
+   "type": "dragon",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": "2024: no lair actions; extra legendary action and resistance in its lair, plus regional effects in the book."
+  },
+  {
+   "name": "Ancient Black Dragon",
+   "cr": 21,
+   "type": "dragon",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 4,
+    "inLair": 5
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": "2024: no lair actions; extra legendary action and resistance in its lair, plus regional effects in the book."
+  },
+  {
+   "name": "Ancient Blue Dragon",
+   "cr": 23,
+   "type": "dragon",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 4,
+    "inLair": 5
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": "2024: no lair actions; extra legendary action and resistance in its lair, plus regional effects in the book."
+  },
+  {
+   "name": "Ancient Brass Dragon",
+   "cr": 20,
+   "type": "dragon",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 4,
+    "inLair": 5
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": "2024: no lair actions; extra legendary action and resistance in its lair, plus regional effects in the book."
+  },
+  {
+   "name": "Ancient Bronze Dragon",
+   "cr": 22,
+   "type": "dragon",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 4,
+    "inLair": 5
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": "2024: no lair actions; extra legendary action and resistance in its lair, plus regional effects in the book."
+  },
+  {
+   "name": "Ancient Copper Dragon",
+   "cr": 21,
+   "type": "dragon",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 4,
+    "inLair": 5
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": "2024: no lair actions; extra legendary action and resistance in its lair, plus regional effects in the book."
+  },
+  {
+   "name": "Ancient Gold Dragon",
+   "cr": 24,
+   "type": "dragon",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": "2024: no lair actions; extra legendary action and resistance in its lair, plus regional effects in the book."
+  },
+  {
+   "name": "Ancient Green Dragon",
+   "cr": 22,
+   "type": "dragon",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 4,
+    "inLair": 5
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": "2024: no lair actions; extra legendary action and resistance in its lair, plus regional effects in the book."
+  },
+  {
+   "name": "Ancient Red Dragon",
+   "cr": 24,
+   "type": "dragon",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 4,
+    "inLair": 5
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": "2024: no lair actions; extra legendary action and resistance in its lair, plus regional effects in the book."
+  },
+  {
+   "name": "Ancient Silver Dragon",
+   "cr": 23,
+   "type": "dragon",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 4,
+    "inLair": 5
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": "2024: no lair actions; extra legendary action and resistance in its lair, plus regional effects in the book."
+  },
+  {
+   "name": "Ancient White Dragon",
+   "cr": 20,
+   "type": "dragon",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 4,
+    "inLair": 5
+   },
+   "lair": {
+    "initiative": null,
+    "actions": []
+   },
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": "2024: no lair actions; extra legendary action and resistance in its lair, plus regional effects in the book."
+  },
+  {
+   "name": "Animal Lord",
+   "cr": 20,
+   "type": "celestial",
+   "edition": "2024",
+   "source": "MM 2024",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": null,
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": false,
+   "notes": null
+  },
+  {
+   "name": "Arch-hag",
+   "cr": 21,
+   "type": "fey",
+   "edition": "2024",
+   "source": "MM 2024",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 4,
+    "inLair": 5
+   },
+   "lair": null,
+   "regionalEffects": [
+    "Meddlesome Magic: a creature finishing a long rest within 1 mile may have its first spell twisted against it."
+   ],
+   "confirmed": false,
+   "notes": null
+  },
+  {
+   "name": "Beholder",
+   "cr": 13,
+   "type": "aberration",
+   "edition": "2024",
+   "source": "MM 2024",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": null,
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": false,
+   "notes": null
+  },
+  {
+   "name": "Blob of Annihilation",
+   "cr": 23,
+   "type": "ooze (titan)",
+   "edition": "2024",
+   "source": "MM 2024",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 4
+   },
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": false,
+   "notes": null
+  },
+  {
+   "name": "Colossus",
+   "cr": 25,
+   "type": "construct (titan)",
+   "edition": "2024",
+   "source": "MM 2024",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": null,
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": false,
+   "notes": "Legendary actions not listed here: names unconfirmed. Turn on 'Also detect by activation type' (default) to catch them on the sheet."
+  },
+  {
+   "name": "Death Knight",
+   "cr": 17,
+   "type": "undead",
+   "edition": "2024",
+   "source": "MM 2024",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": null,
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": false,
+   "notes": "Legendary actions not listed here: names unconfirmed. Turn on 'Also detect by activation type' (default) to catch them on the sheet."
+  },
+  {
+   "name": "Death Tyrant",
+   "cr": 14,
+   "type": "undead",
+   "edition": "2024",
+   "source": "MM 2024",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": null,
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": false,
+   "notes": "Legendary actions not listed here: names unconfirmed. Turn on 'Also detect by activation type' (default) to catch them on the sheet."
+  },
+  {
+   "name": "Demilich",
+   "cr": 18,
+   "type": "undead",
+   "edition": "2024",
+   "source": "MM 2024",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": null,
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": false,
+   "notes": null
+  },
+  {
+   "name": "Dracolich",
+   "cr": 17,
+   "type": "undead",
+   "edition": "2024",
+   "source": "MM 2024",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": null,
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": false,
+   "notes": "Legendary actions not listed here: names unconfirmed. Turn on 'Also detect by activation type' (default) to catch them on the sheet."
+  },
+  {
+   "name": "Elemental Cataclysm",
+   "cr": 22,
+   "type": "elemental (titan)",
+   "edition": "2024",
+   "source": "MM 2024",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 4
+   },
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": false,
+   "notes": null
+  },
+  {
+   "name": "Empyrean",
+   "cr": 23,
+   "type": "celestial (titan)",
+   "edition": "2024",
+   "source": "MM 2024",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": null,
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": false,
+   "notes": null
+  },
+  {
+   "name": "Gulthias Blight",
+   "cr": 16,
+   "type": "plant",
+   "edition": "2024",
+   "source": "MM 2024",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": null,
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": false,
+   "notes": "Legendary actions not listed here: names unconfirmed. Turn on 'Also detect by activation type' (default) to catch them on the sheet."
+  },
+  {
+   "name": "Kraken",
+   "cr": 23,
+   "type": "monstrosity (titan)",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 4,
+    "inLair": 5
+   },
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Lich",
+   "cr": 21,
+   "type": "undead",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 4,
+    "inLair": 5
+   },
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Mummy Lord",
+   "cr": 15,
+   "type": "undead",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Solar",
+   "cr": 21,
+   "type": "celestial",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 4
+   },
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Sphinx of Lore",
+   "cr": 11,
+   "type": "celestial",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Sphinx of Valor",
+   "cr": 17,
+   "type": "celestial",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Tarrasque",
+   "cr": 30,
+   "type": "monstrosity (titan)",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": {
+    "uses": 6
+   },
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Unicorn",
+   "cr": 5,
+   "type": "celestial",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Vampire",
+   "cr": 13,
+   "type": "undead",
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "legendaryActions": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "legendaryResistance": {
+    "uses": 3,
+    "inLair": 4
+   },
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": true,
+   "notes": null
+  },
+  {
+   "name": "Vampire Umbral Lord",
+   "cr": 15,
+   "type": "undead",
+   "edition": "2024",
+   "source": "MM 2024",
+   "legendaryActions": {
+    "uses": 3
+   },
+   "legendaryResistance": null,
+   "lair": null,
+   "regionalEffects": [],
+   "confirmed": false,
+   "notes": "Legendary actions not listed here: names unconfirmed. Turn on 'Also detect by activation type' (default) to catch them on the sheet."
+  }
+ ]
+}

@@ -1,0 +1,147 @@
+{
+  "DXRM": {
+    "Settings": {
+      "ExportList": {
+        "Name": "Export Reminder list",
+        "Label": "Export Reminder list",
+        "Hint": "Downloads this world's Reminder list (legendary, villain and lair actions) as a JSON file. Add or remove actions by right-clicking an item (Items sidebar, compendiums, actor sheets)."
+      },
+      "ImportList": {
+        "Name": "Import Reminder list",
+        "Label": "Import Reminder list",
+        "Hint": "Replaces this world's Reminder list with a JSON file made with Export. This can't be undone, so export the current list first if you may want it back."
+      },
+      "LegendaryReminders": {
+        "Name": "Legendary action reminders",
+        "Hint": "After a player character's turn, list every NPC in combat that still has legendary action points, with its legendary actions and their cost."
+      },
+      "AfterPcOnly": {
+        "Name": "Only after player characters' turns",
+        "Hint": "Post the legendary / villain card only after a player character's turn. Turn off to post it after any creature's turn (the creature whose turn just ended is left out)."
+      },
+      "VillainReminders": {
+        "Name": "Villain action reminders",
+        "Hint": "Include villain actions on the card. They spend legendary points and each can be used once per combat; used ones are left out."
+      },
+      "ResistanceReminders": {
+        "Name": "Legendary resistance reminders",
+        "Hint": "Whisper the GM when a creature fails a saving throw and still has legendary resistance left, with a button to spend one."
+      },
+      "LairReminders": {
+        "Name": "Lair action reminders",
+        "Hint": "Post a card with the creature's lair actions when the turn order passes its lair initiative count (20 by default, 2014 rules)."
+      },
+      "DetectByActivation": {
+        "Name": "Also detect by activation type",
+        "Hint": "In dnd5e, count every item whose activation is a legendary or lair action, even if its name isn't in the Reminder list."
+      },
+      "IgnorePlayerOwned": {
+        "Name": "Only check non-player creatures",
+        "Hint": "Skip actors that have a player owner (player characters, companions)."
+      },
+      "WhisperGM": {
+        "Name": "Whisper to the GM only",
+        "Hint": "Whisper reminder cards to the GM. Turn off to post them for everyone (only the GM can press the buttons)."
+      },
+      "DeletePrevious": {
+        "Name": "Remove old reminder cards",
+        "Hint": "When a new legendary or lair card is posted, delete the previous one of the same combat so only the current one stays in chat."
+      },
+      "Sound": {
+        "Name": "Reminder sound",
+        "Hint": "Sound played for the GM when a reminder card is posted. Leave empty for no sound."
+      },
+      "Volume": {
+        "Name": "Reminder volume",
+        "Hint": "Volume of the reminder sound (0 - 1)."
+      }
+    },
+    "Kind": {
+      "legendary": "Legendary action",
+      "villain": "Villain action",
+      "lair": "Lair action"
+    },
+    "Context": {
+      "Add": "Add to Reminder list",
+      "Remove": "Remove from Reminder list"
+    },
+    "Import": {
+      "Title": "Import Reminder list",
+      "Choose": "Choose a Reminder list file (.json) made with <strong>Export Reminder list</strong>.",
+      "Next": "Next",
+      "NoFile": "Reminders: no file was chosen.",
+      "NotJson": "the file is not valid JSON.",
+      "NoFeatures": "the file has no \"features\" list. Use a file made with Export Reminder list.",
+      "BadEntry": "entry {index} in \"features\" has no name.",
+      "Failed": "Reminders: could not import the list, {error}",
+      "ConfirmTitle": "Replace the Reminder list?",
+      "Warning": "Importing <strong>{file}</strong> ({count} actions) will permanently replace this world's current Reminder list ({current} actions).",
+      "Irreversible": "This is irreversible. The current list can't be restored unless you have exported it.",
+      "Question": "Do you understand and want to replace the list?",
+      "Yes": "Yes, replace the list",
+      "No": "No",
+      "Done": "Reminders: imported {count} actions from {file}. This world's list has been replaced."
+    },
+    "Chat": {
+      "Speaker": "Reminders",
+      "TurnTitle": "Legendary actions available",
+      "After": "End of {name}'s turn.",
+      "LairTitle": "Lair actions",
+      "LairCount": "Initiative count {count}",
+      "Points": "Legendary actions {value}/{max}",
+      "Resistance": "Legendary resistance {value}/{max}",
+      "Cost": "costs {cost}",
+      "Left": "{value} left",
+      "OncePerCombat": "once per combat",
+      "Used": "used this combat",
+      "UseAnAction": "Use an Action",
+      "Open": "Open the item's sheet",
+      "Exclude": "Don't remind about this action again",
+      "ResistTitle": "Legendary resistance?",
+      "ResistText": "<strong>{name}</strong> failed a {ability} saving throw ({total} against DC {dc}).",
+      "ResistUse": "Use Legendary Resistance"
+    },
+    "Notify": {
+      "ItemMissing": "Reminders: the item could not be found (was the creature deleted?).",
+      "Posted": "Reminders: posted {item} to chat.",
+      "ListCreated": "Reminders: this world's Reminder list was set up with {count} actions.",
+      "ListLoadFailed": "Reminders: could not load the default Reminder list. See the console (F12) for details.",
+      "NoList": "Reminders: this world has no Reminder list yet. Reload the world as GM to create it.",
+      "Added": "Reminders: {item} was added to the Reminder list.",
+      "Removed": "Reminders: {item} was removed from the Reminder list.",
+      "Exported": "Reminders: exported {count} actions to {file}.",
+      "Set": "Reminders: the reminder setting of {item} was changed.",
+      "NoResistance": "Reminders: {name} has no legendary resistance left.",
+      "ResistanceUsed": "Reminders: {name} used a legendary resistance ({value}/{max} left)."
+    },
+    "Item": {
+      "Title": "Reminder",
+      "Intro": "How should <strong>{item}</strong> be treated by the reminders?",
+      "Mode": "Reminder",
+      "Auto": "Automatic (activation type and the Reminder list)",
+      "Never": "Never remind (excluded)",
+      "AutoResult": "Automatic gives:",
+      "Save": "Save"
+    },
+    "Status": {
+      "flag": "{kind} (set on this item).",
+      "never": "never reminded (excluded on this item).",
+      "villain": "{kind}, from its name or the Reminder list.",
+      "activation": "{kind}, from its activation type.",
+      "list": "{kind}, it matches \"{detail}\" in the Reminder list.",
+      "none": "no reminder: it isn't a legendary, villain or lair action."
+    },
+    "Exclude": {
+      "Title": "Exclude from reminders",
+      "Question": "Stop reminding about <strong>{item}</strong>?",
+      "Hint": "You can undo this from the item sheet's header (Reminder) or by right-clicking the item and choosing Add to Reminder list.",
+      "Token": "Only this creature",
+      "Actor": "All {actor} creatures",
+      "Name": "Remove \"{item}\" from the Reminder list",
+      "Done": {
+        "token": "Reminders: {item} is excluded for this creature.",
+        "actor": "Reminders: {item} is excluded for all {actor} creatures."
+      }
+    }
+  }
+}
