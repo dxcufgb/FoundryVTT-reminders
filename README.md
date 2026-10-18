@@ -1,5 +1,12 @@
 # Dxcufgb's Reminders
 
+[![Foundry v13](https://img.shields.io/github/v/release/dxcufgb/FoundryVTT-reminders?label=Foundry%20v13&logo=foundryvirtualtabletop&color=ff6400)](https://github.com/dxcufgb/FoundryVTT-reminders/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/dxcufgb/FoundryVTT-reminders/module.zip?label=downloads&color=blue)](https://github.com/dxcufgb/FoundryVTT-reminders/releases)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-support-FF5E5B?logo=kofi&logoColor=white)](https://ko-fi.com/dxcufgb)\
+[![CI](https://img.shields.io/github/actions/workflow/status/dxcufgb/FoundryVTT-reminders/ci.yml?branch=main&label=CI)](https://github.com/dxcufgb/FoundryVTT-reminders/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/dxcufgb/FoundryVTT-reminders)](LICENSE)
+[![System dnd5e](https://img.shields.io/badge/system-dnd5e%204%2B-8a5cf6)](https://foundryvtt.com/packages/dnd5e)
+
 Keeps legendary actions, villain actions, lair actions and legendary resistances in the GM's chat at the right moments. Cards list each option with its cost and the points remaining. Expand **Use an Action** for native dnd5e **Use** buttons that spend legendary points through the system pipeline.
 
 **Foundry VTT:** v13 · **System:** dnd5e 4.x / 5.x (other systems: name matching only)
