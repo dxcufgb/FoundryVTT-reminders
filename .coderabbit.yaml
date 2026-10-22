@@ -1,0 +1,19 @@
+# CodeRabbit settings for FoundryVTT-reminders.
+# Shared rules come from the central dxcufgb/coderabbit repository (inheritance: true), and CodeRabbit reads
+# the README as code guidelines. Only what is specific to this repository is here.
+# Check the merged result on a pull request with: @coderabbitai configuration
+inheritance: true
+
+reviews:
+  path_instructions:
+    - path: "scripts/**/*.js"
+      instructions: |
+        Legendary, villain and lair action and legendary resistance cards go to the GM only: whispered, and
+        nothing on them reaches players. Only the active GM's client posts cards and updates counters, so a
+        reminder is posted once. Point counts must stay right when turns are undone or combat jumps rounds.
+        dnd5e 4.x/5.x data paths are guarded; other systems fall back to name matching without throwing.
+    - path: ".github/workflows/{ci,release}.yml"
+      instructions: |
+        Thin callers of dxcufgb/foundry-module-ci, identical in every Foundry module repository. Flag any change
+        here that is not the same change in all modules (it belongs in foundry-module-ci instead), except the
+        pinned SHA of foundry-module-ci itself.
