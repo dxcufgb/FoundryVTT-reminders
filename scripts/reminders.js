@@ -8,8 +8,10 @@
  *     legendary points left, with its legendary and villain actions, the cost of each and how many
  *     points remain. "Use an Action" expands native Use buttons (item.use()), so points are spent
  *     through the system's own pipeline.
- *   - Villain actions spend legendary points but can be used once per combat each.
+ *   - Villain actions can be used once per combat each (used ones are left off later cards).
+ *     The module spends no legendary points for them; Use runs the item's own pipeline.
  *   - Lair actions (2014 rules): a card when the turn order passes the lair's initiative count.
+ *     In dnd5e the creature's lair setting (resources.lair.value) must be on.
  *   - Legendary resistance: a whisper when a creature fails a saving throw and still has uses left,
  *     with a button that spends one.
  *
