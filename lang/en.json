@@ -21,7 +21,7 @@
       },
       "VillainReminders": {
         "Name": "Villain action reminders",
-        "Hint": "Include villain actions on the card. They spend legendary points and each can be used once per combat; used ones are left out."
+        "Hint": "Include villain actions on the card. Each can be used once per combat; used ones are left out of later cards. The module doesn't spend legendary points for them."
       },
       "ResistanceReminders": {
         "Name": "Legendary resistance reminders",

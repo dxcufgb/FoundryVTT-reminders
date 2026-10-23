@@ -22,10 +22,10 @@ https://github.com/dxcufgb/FoundryVTT-reminders/releases/latest/download/module.
 ## Features
 
 - **Legendary / villain reminder cards after a PC's turn when points remain.** One card per turn lists every NPC in combat that still has legendary action points, for example *"Adult Red Dragon: Legendary actions 2/3"*, with each option and what it costs.
-- **Villain actions spend legendary points but are once per combat.** Once used (from the card, the sheet or a macro), a villain action is greyed out on later cards in that combat.
+- **Villain actions are once per combat.** Once used (from the card, the sheet or a macro), a villain action is marked used: it is greyed out on the card already in chat and left off later cards in that combat. The module doesn't spend legendary points for it; its Use button runs the item's own Use, which spends points only if the item itself consumes them.
 - **Legendary resistance whisper when a boss fails a save and still has uses left.** It shows the roll and DC and has a **Use Legendary Resistance** button. The button uses the creature's *Legendary Resistance* item if it has one, otherwise it lowers the counter by one.
 - **Native Use buttons with cost / remaining labels.** Expand **Use an Action** on the card: each button runs the item's own Use (dnd5e: the activity pipeline, which spends the legendary points), shows *costs 2 · 1 left*, and is disabled when there aren't enough points left. The labels update live as points are spent.
-- **Lair action cards (2014 rules)** when the turn order passes the lair's initiative count (20 by default).
+- **Lair action cards (2014 rules)** when the turn order passes the lair's initiative count (20 by default). In dnd5e the creature's lair setting must be on (`system.resources.lair.value`); creatures without it get no lair card.
 - **GM-only whisper by default.** Only the GM can press the buttons, even if the cards are made public.
 - The previous card of the same combat is removed when a new one is posted, so chat stays tidy (setting).
 
@@ -42,6 +42,7 @@ https://github.com/dxcufgb/FoundryVTT-reminders/releases/latest/download/module.
 - **Right-click an item** in the Items sidebar, an Item compendium or a dnd5e actor sheet: **Add to Reminder list** / **Remove from Reminder list**.
 - **Item sheet header → Reminder** (in the ⋮ menu on dnd5e sheets): *Automatic*, *Legendary action*, *Villain action*, *Lair action* or *Never remind*. This wins over everything else.
 - **On a card**, the ban button next to an action: only this creature, all creatures made from this actor, or remove the name from the list.
+- In dnd5e, removing a name from the list doesn't stop items that have a *Legendary Action* or *Lair Action* activation while *Also detect by activation type* is on: the activation still counts. To stop one of those, use *Never remind* (on the item sheet, or *only this creature* / *all creatures* on the card), or turn that setting off.
 - **Module settings → Export / Import Reminder list** to move a list between worlds. Import warns before replacing the list.
 
 From a macro: `game.modules.get("dxcufgbs-reminders").api` has `remindNow()`, `findReminders(actor)`, `kindOf(item)`, `legendaryPoints(actor)`, `legendaryResistance(actor)`, `getList()`, `isListed(name)`, `addToList(item)`, `removeFromList(name)`, `exportList()`, `importList()`, `resetList()` and `configureItem(item)`.
