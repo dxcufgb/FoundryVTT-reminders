@@ -7,6 +7,8 @@
 [![License](https://img.shields.io/github/license/dxcufgb/FoundryVTT-reminders)](LICENSE)
 [![System dnd5e](https://img.shields.io/badge/system-dnd5e%204%2B-8a5cf6)](https://foundryvtt.com/packages/dnd5e)
 
+<a href="https://dxcufgb.github.io/FVTT-dev-showcase/"><img src="https://dxcufgb.github.io/FVTT-dev-showcase/assets/img/workshop-badge.png" alt="Dxcufgb's Workshop: every Foundry VTT project, video and changelog in one place" width="650"></a>
+
 Keeps legendary actions, villain actions, lair actions and legendary resistances in the GM's chat at the right moments. Cards list each option with its cost and the points remaining. Expand **Use an Action** for native dnd5e **Use** buttons that spend legendary points through the system pipeline.
 
 **Foundry VTT:** v13 · **System:** dnd5e 4.x / 5.x (other systems: name matching only)
