@@ -100,7 +100,6 @@ Add `{ "id": "dxcufgbs-reminders", "type": "module" }` to `relationships.recomme
 
 - `flags.dxcufgbs-reminders.kind` on Items: see *Per item* above.
 - `flags.dxcufgbs-reminders.villainUsed` on a Combat: `{ "<item uuid with . replaced by _>": true }` for each villain action used in that combat. Read it; the module writes it.
-- Reminder cards are chat messages with `flags.dxcufgbs-reminders.card` set to `"turn"`, `"lair"` or `"resist"`, plus `actorUuids` (and `combatId` and `round` on turn and lair cards). Internal, may change.
 - The list file (Export / Import, and the default `data/reminders.json`): `{ "version": 1, "features": [ … ], "creatures": [ … ], … }`. Import needs a `features` array in which every entry has a `name`. An entry has `id`, `name`, optional `aliases`, `kind` (`legendary` / `villain` / `lair`), `cost`, `match` (`exact` ignores case, apostrophe style and text in parentheses; `contains` matches anywhere in the item's name), `effect` (the summary on the card), `limit`, `creatures`, `edition`, `source` and `confirmed`. When several entries match, the one whose `creatures` names the actor wins.
 
 ## Settings

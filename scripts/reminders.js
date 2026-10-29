@@ -25,13 +25,21 @@
  *   - The item's own setting wins: sheet header button "Reminder" -> Automatic / Legendary / Villain /
  *     Lair / Never, or item.setFlag("dxcufgbs-reminders", "kind", "legendary" | "villain" | "lair" | "none").
  *
- * API: game.modules.get("dxcufgbs-reminders").api
- *   .findReminders(actor)        -> [{ item, kind, cost, entry }]
- *   .remindNow(combat)           -> posts the legendary / villain card now
- *   .legendaryPoints(actor)      -> { value, max } | null
- *   .kindOf(item)                -> { kind, reason, entry }
- *   .getList() / .isListed() / .addToList() / .removeFromList() / .exportList() / .importList() / .resetList()
- *   .configureItem(item)
+ * API: game.modules.get("dxcufgbs-reminders").api (set on ready)
+ *   .findReminders(actor)          -> [{ item, kind, cost, entry }] (cost defaults to 1, entry may be null)
+ *   .kindOf(item)                  -> { kind, reason, entry, cost }
+ *   .legendaryPoints(actor)        -> { value, max } | null (system.resources.legact)
+ *   .legendaryResistance(actor)    -> { value, max } | null (system.resources.legres)
+ *   .getList()                     -> this world's Reminder list | null
+ *   .isListed(nameOrItem)          -> boolean
+ *   GM only (players get false / null / nothing):
+ *   .remindNow(combat = game.combat) -> Promise<ChatMessage | null>, posts the legendary / villain card now
+ *   .addToList(itemOrName, kind?)  -> Promise<boolean>
+ *   .removeFromList(nameOrItem)    -> Promise<boolean>
+ *   .configureItem(item)           -> opens the item's Reminder dialog
+ *   .exportList()                  -> downloads reminders-<world id>.json
+ *   .importList()                  -> Promise<boolean>, file picker and confirmation, replaces the list
+ *   .resetList()                   -> Promise<boolean>, replaces the list with the default one (no confirmation)
  */
 
 const MODULE_ID = "dxcufgbs-reminders";
