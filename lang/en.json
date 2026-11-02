@@ -31,6 +31,10 @@
         "Name": "Lair action reminders",
         "Hint": "Post a card with the creature's lair actions when the turn order passes its lair initiative count (20 by default, 2014 rules)."
       },
+      "HitReminders": {
+        "Name": "When-hit reminders (Heated Body)",
+        "Hint": "In dnd5e, whisper the GM when a melee attack roll hits a creature that has a when-hit trait such as Heated Body, with the trait's effect. Needs the attacker to target the creature so the roll is checked against its AC."
+      },
       "DetectByActivation": {
         "Name": "Also detect by activation type",
         "Hint": "In dnd5e, count every item whose activation is a legendary or lair action, even if its name isn't in the Reminder list."
@@ -59,7 +63,8 @@
     "Kind": {
       "legendary": "Legendary action",
       "villain": "Villain action",
-      "lair": "Lair action"
+      "lair": "Lair action",
+      "hit": "When hit (melee)"
     },
     "Context": {
       "Add": "Add to Reminder list",
@@ -99,7 +104,10 @@
       "Exclude": "Don't remind about this action again",
       "ResistTitle": "Legendary resistance?",
       "ResistText": "<strong>{name}</strong> failed a {ability} saving throw ({total} against DC {dc}).",
-      "ResistUse": "Use Legendary Resistance"
+      "ResistUse": "Use Legendary Resistance",
+      "HitTitle": "Hit in melee",
+      "HitText": "<strong>{name}</strong> was hit by {attacker}'s melee attack ({total} against AC {ac}).",
+      "OnMeleeHit": "on a melee hit"
     },
     "Notify": {
       "ItemMissing": "Reminders: the item could not be found (was the creature deleted?).",
@@ -129,7 +137,7 @@
       "villain": "{kind}, from its name or the Reminder list.",
       "activation": "{kind}, from its activation type.",
       "list": "{kind}, it matches \"{detail}\" in the Reminder list.",
-      "none": "no reminder: it isn't a legendary, villain or lair action."
+      "none": "no reminder: it isn't a legendary, villain or lair action or a when-hit trait."
     },
     "Exclude": {
       "Title": "Exclude from reminders",

@@ -1,9 +1,10 @@
 {
  "version": 1,
- "matching": "An item counts as a reminder when its name matches an entry's name (or alias) and, in systems that say so (dnd5e), its activation is a legendary or lair action. match 'exact' ignores case, apostrophe style and text in parentheses; 'contains' matches anywhere in the item's name.",
+ "matching": "An item counts as a reminder when its name matches an entry's name (or alias) and, in systems that say so (dnd5e), its activation is a legendary or lair action. Entries of kind 'hit' (traits such as Heated Body) need no activation. match 'exact' ignores case, apostrophe style and text in parentheses; 'contains' matches anywhere in the item's name.",
  "kinds": {
   "legendary": "Legendary action: used right after another creature's turn, spending legendary action uses",
   "lair": "Lair action (2014): used on initiative count 20, losing ties",
+  "hit": "When hit: a trait that triggers when the creature is hit by a melee attack (dnd5e attack rolls with a target)",
   "custom": "Added by the GM from an item's context menu"
  },
  "features": [
@@ -2263,6 +2264,23 @@
    ],
    "limit": "Can't take this action again until the start of its next turn.",
    "effect": "Moves up to its Speed; creatures within 60 ft of where it stops lose Concentration and, if Medium or smaller, fall prone.",
+   "match": "exact",
+   "confirmed": true
+  },
+  {
+   "id": "2014-hit-heated-body",
+   "name": "Heated Body",
+   "kind": "hit",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014",
+   "creatures": [
+    "Azer",
+    "Fire Snake",
+    "Salamander"
+   ],
+   "limit": null,
+   "effect": "The attacker takes fire damage if it hit with a melee attack while within 5 ft (or touches the creature): Azer 5 (1d10), Fire Snake 3 (1d6), Salamander 7 (2d6).",
    "match": "exact",
    "confirmed": true
   }
