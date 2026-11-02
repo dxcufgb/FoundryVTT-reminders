@@ -31,9 +31,17 @@
         "Name": "Lair action reminders",
         "Hint": "Post a card with the creature's lair actions when the turn order passes its lair initiative count (20 by default, 2014 rules)."
       },
+      "HitReminders": {
+        "Name": "When-hit reminders",
+        "Hint": "In dnd5e, whisper the GM when an attack roll hits a creature that has a when-hit trait or reaction (Heated Body, Parry, Rust Metal...), with its effect. Most trigger on melee hits only. Needs the attacker to target the creature so the roll is checked against its AC."
+      },
       "DetectByActivation": {
         "Name": "Also detect by activation type",
         "Hint": "In dnd5e, count every item whose activation is a legendary or lair action, even if its name isn't in the Reminder list."
+      },
+      "MergeDefaultList": {
+        "Name": "Add new actions from the default list",
+        "Hint": "When the world starts, add actions that are new in the module's default Reminder list (after a module update) to this world's list. Actions you removed are not added back, and your own changes are kept."
       },
       "IgnorePlayerOwned": {
         "Name": "Only check non-player creatures",
@@ -59,7 +67,8 @@
     "Kind": {
       "legendary": "Legendary action",
       "villain": "Villain action",
-      "lair": "Lair action"
+      "lair": "Lair action",
+      "hit": "When hit"
     },
     "Context": {
       "Add": "Add to Reminder list",
@@ -99,12 +108,19 @@
       "Exclude": "Don't remind about this action again",
       "ResistTitle": "Legendary resistance?",
       "ResistText": "<strong>{name}</strong> failed a {ability} saving throw ({total} against DC {dc}).",
-      "ResistUse": "Use Legendary Resistance"
+      "ResistUse": "Use Legendary Resistance",
+      "HitTitle": "Hit in melee",
+      "HitTitleAny": "Hit by an attack",
+      "HitText": "<strong>{name}</strong> was hit by {attacker}'s melee attack ({total} against AC {ac}).",
+      "HitTextAny": "<strong>{name}</strong> was hit by {attacker}'s attack ({total} against AC {ac}).",
+      "OnMeleeHit": "on a melee hit",
+      "OnHit": "on any hit"
     },
     "Notify": {
       "ItemMissing": "Reminders: the item could not be found (was the creature deleted?).",
       "Posted": "Reminders: posted {item} to chat.",
       "ListCreated": "Reminders: this world's Reminder list was set up with {count} actions.",
+      "ListMerged": "Reminders: added {count} new actions from the default list: {names}.",
       "ListLoadFailed": "Reminders: could not load the default Reminder list. See the console (F12) for details.",
       "NoList": "Reminders: this world has no Reminder list yet. Reload the world as GM to create it.",
       "Added": "Reminders: {item} was added to the Reminder list.",
@@ -129,7 +145,7 @@
       "villain": "{kind}, from its name or the Reminder list.",
       "activation": "{kind}, from its activation type.",
       "list": "{kind}, it matches \"{detail}\" in the Reminder list.",
-      "none": "no reminder: it isn't a legendary, villain or lair action."
+      "none": "no reminder: it isn't a legendary, villain or lair action or a when-hit trait."
     },
     "Exclude": {
       "Title": "Exclude from reminders",

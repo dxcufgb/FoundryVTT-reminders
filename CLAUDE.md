@@ -12,10 +12,14 @@ and no npm dependencies.
   `kindOf`, `findReminders`), villain once-per-combat tracking (`villainUsed`, `markVillainUsed`, combat flag
   `villainUsed`), context menus, the item sheet header button (`configureItem`), turn detection (`combatTurnChange` →
   `onTurnChange` → `postTurnCard` / `checkLair` → `postLairCard`), legendary resistance (`dnd5e.rollSavingThrow` /
-  `dnd5e.rollAbilitySave` → `onSaveRolled`, `useResistance`), card buttons and live labels (`refreshLabels`,
+  `dnd5e.rollAbilitySave` → `onSaveRolled`, `useResistance`), when-hit traits such as Heated Body (`createChatMessage`
+  on a dnd5e attack message → `onAttackMessage` → `postHitCard`), card buttons and live labels (`refreshLabels`,
   `refreshCardsFor`), `useItem`, and the module API (`game.modules.get("dxcufgbs-reminders").api`).
 - `data/reminders.json` – the default list (`version`, `matching`, `kinds`, `features`, `creatures`): the legendary
-  and lair actions of the 2014 and 2024 Monster Manuals. Copied into each world on first GM start.
+  and lair actions of the 2014 and 2024 Monster Manuals, plus when-hit traits (Heated Body). Copied into each world on first GM
+  start; on later starts `mergeDefaults` adds new default entries (by `id`) once (setting `MergeDefaultList`). The
+  world's list keeps the offered ids in `knownDefaults`, so removed entries stay removed; default entries need a
+  stable, unique `id`.
 - `styles/reminders.css` – cards and dialogs. `lang/en.json` – all strings (`DXRM.*`).
 - `.github/workflows/ci.yml` / `release.yml` – thin callers of `dxcufgb/foundry-module-ci` (checks, packaging,
   release); identical in every module, do not edit them here. `claude.yml` – the Claude review.
@@ -29,9 +33,10 @@ and no npm dependencies.
 - Update `README.md` when behaviour, settings or the API change.
 
 ## Review focus
-- **One client posts**: turn and lair cards (`onTurnChange`) and the first list setup (`ensureList`) run only where
+- **One client posts**: turn and lair cards (`onTurnChange`) and the list setup and merge (`ensureList`) run only where
   `isResponsibleGM()` is true (`game.user.isGM && game.users.activeGM?.isSelf`), because `combatTurnChange` fires on
-  every client. The legendary resistance card and villain tracking run from dnd5e roll/use hooks that fire only on
+  every client. The when-hit card (`onAttackMessage`) runs from `createChatMessage`, which also fires on every client, so
+  it uses `isResponsibleGM()` too. The legendary resistance card and villain tracking run from dnd5e roll/use hooks that fire only on
   the client that rolled or used, and are limited to GMs (`game.user.isGM`). New hooks that fire on every client must
   use `isResponsibleGM()`, or each GM posts a copy. `lairDone` (once per combat round) is in memory on that client.
 - **Who sees the cards**: `whisperTargets()` whispers every card to all GM users while `WhisperGM` is on (the
@@ -53,5 +58,8 @@ and no npm dependencies.
   legendary/lair name only counts with a matching activation (`systemHasActivations`), so a generic "Bite" is not a
   reminder; keep that.
 - **List data contract**: `validateImport` must keep rejecting files without a `features` array or with an unnamed
-  entry; `kind` is `legendary` / `villain` / `lair`, `match` is `exact` / `contains`. Changing an entry's `name` or
+  entry; `kind` is `legendary` / `villain` / `lair` / `hit`. `hit` entries need no activation; their optional `activation`
+  (required dnd5e activation type), `requires` (text the item's description must contain) and `attack` (`melee`, the
+  default, or `any`) keep same-named features of the other edition apart (2014 vs 2024 Fire Aura), and a legendary or
+  lair activation always wins over a `hit` entry (the 2014 Mummy Lord's Whirlwind of Sand); `match` is `exact` / `contains`. Changing an entry's `name` or
   `match` changes matching in every world that copies the default list.

@@ -14,6 +14,9 @@
  *     In dnd5e the creature's lair setting (resources.lair.value) must be on.
  *   - Legendary resistance: a whisper when a creature fails a saving throw and still has uses left,
  *     with a button that spends one.
+ *   - When hit (dnd5e): a whisper when a creature with a "hit" trait (Heated Body, Parry, Rust Metal...)
+ *     is hit by an attack, read from the attack roll's chat message (its targets and their AC). Entries
+ *     trigger on melee hits, or on any hit with attack: "any".
  *
  * What counts as a reminder action:
  *   - dnd5e items whose activation is "legendary" or "lair" (setting "Also detect by activation type").
@@ -22,8 +25,11 @@
  *     In dnd5e a list match for a legendary or lair entry also needs a legendary or lair activation,
  *     so a creature's ordinary "Bite" doesn't count just because the vampire's legendary Bite is listed.
  *   - Items named "... Villain Action ..." and list entries of kind "villain".
+ *   - List entries of kind "hit" (traits like Heated Body): matched by name, no activation needed; the
+ *     entry's optional `activation` and `requires` (description text) tell same-named features apart.
  *   - The item's own setting wins: sheet header button "Reminder" -> Automatic / Legendary / Villain /
- *     Lair / Never, or item.setFlag("dxcufgbs-reminders", "kind", "legendary" | "villain" | "lair" | "none").
+ *     Lair / When hit / Never, or item.setFlag("dxcufgbs-reminders", "kind",
+ *     "legendary" | "villain" | "lair" | "hit" | "none").
  *
  * API: game.modules.get("dxcufgbs-reminders").api (set on ready)
  *   .findReminders(actor)          -> [{ item, kind, cost, entry }] (cost defaults to 1, entry may be null)
@@ -40,12 +46,16 @@
  *   .exportList()                  -> downloads reminders-<world id>.json
  *   .importList()                  -> Promise<boolean>, file picker and confirmation, replaces the list
  *   .resetList()                   -> Promise<boolean>, replaces the list with the default one (no confirmation)
+ *
+ * On world start the active GM adds the default list's new entries to the world's list (setting
+ * "Add new actions from the default list"). The list's knownDefaults holds the default ids already
+ * offered, so actions the GM removed are not added again.
  */
 
 const MODULE_ID = "dxcufgbs-reminders";
 const LIST_KEY = "ReminderList";
 const DEFAULT_LIST_PATH = `modules/${MODULE_ID}/data/reminders.json`;
-const KINDS = ["legendary", "villain", "lair"];
+const KINDS = ["legendary", "villain", "lair", "hit"];
 const VILLAIN_NAME = /villain\s+action/i;
 
 /** Lair cards already posted, as "combatId:round". */
@@ -109,7 +119,9 @@ Hooks.once("init", () => {
   reg("VillainReminders", { type: Boolean, default: true });
   reg("ResistanceReminders", { type: Boolean, default: true });
   reg("LairReminders", { type: Boolean, default: true });
+  reg("HitReminders", { type: Boolean, default: true });
   reg("DetectByActivation", { type: Boolean, default: true });
+  reg("MergeDefaultList", { type: Boolean, default: true });
   reg("IgnorePlayerOwned", { type: Boolean, default: true });
   reg("WhisperGM", { type: Boolean, default: true });
   reg("DeletePrevious", { type: Boolean, default: true });
@@ -280,12 +292,73 @@ function customEntry(name, { item = null, kind = "legendary" } = {}) {
   };
 }
 
+/** Remember every default entry as offered, so a later merge doesn't bring back removed ones. */
+function withKnownDefaults(data) {
+  data.knownDefaults = data.features.map(f => f?.id).filter(Boolean);
+  return data;
+}
+
+/**
+ * Add the default list's new entries to a world's list. Each default entry (by id) is offered once:
+ * entries the GM removed or edited stay that way. Without `knownDefaults` (lists from before this, or
+ * imported files) the entries already in the list count as offered.
+ * @returns {{data: object, added: object[], changed: boolean}}
+ */
+function mergeDefaults(current, defaults) {
+  const data = foundry.utils.deepClone(current);
+  const hadKnown = Array.isArray(data.knownDefaults);
+  const known = new Set(hadKnown ? data.knownDefaults : data.features.map(f => f?.id).filter(Boolean));
+  const ids = new Set(data.features.map(f => f?.id).filter(Boolean));
+  const sameEntry = entry => data.features.some(f =>
+    normalizeName(f?.name) === normalizeName(entry.name) && (f?.kind ?? "legendary") === (entry.kind ?? "legendary"));
+
+  const added = [];
+  for (const entry of defaults?.features ?? []) {
+    if (!entry?.id || typeof entry.name !== "string" || known.has(entry.id)) continue;
+    known.add(entry.id);
+    // Already there (same id, or the GM added the same action by hand): nothing to add.
+    if (ids.has(entry.id) || sameEntry(entry)) continue;
+    const copy = foundry.utils.deepClone(entry);
+    data.features.push(copy);
+    added.push(copy);
+  }
+
+  let kindsAdded = false;
+  if (defaults?.kinds && typeof defaults.kinds === "object") {
+    data.kinds = data.kinds && typeof data.kinds === "object" ? data.kinds : {};
+    for (const [key, text] of Object.entries(defaults.kinds)) {
+      if (!(key in data.kinds)) {
+        data.kinds[key] = text;
+        kindsAdded = true;
+      }
+    }
+  }
+
+  const knownChanged = !hadKnown || known.size !== data.knownDefaults.length;
+  data.knownDefaults = [...known];
+  return { data, added, changed: added.length > 0 || kindsAdded || knownChanged };
+}
+
+/** On world start: create the list from the default one, or add the default list's new entries to it. */
 async function ensureList() {
-  if (getList() || !isResponsibleGM()) return;
-  const data = await loadDefaultList();
-  if (!data) return;
+  if (!isResponsibleGM()) return;
+  const current = getList();
+  if (current && !setting("MergeDefaultList")) return;
+
+  const defaults = await loadDefaultList();
+  if (!defaults) return;
+  if (!current) {
+    await saveList(withKnownDefaults(defaults));
+    ui.notifications.info(t("Notify.ListCreated", { count: defaults.features.length }));
+    return;
+  }
+
+  const { data, added, changed } = mergeDefaults(current, defaults);
+  if (!changed) return;
   await saveList(data);
-  ui.notifications.info(t("Notify.ListCreated", { count: data.features.length }));
+  if (added.length) {
+    ui.notifications.info(t("Notify.ListMerged", { count: added.length, names: added.map(e => e.name).join(", ") }));
+  }
 }
 
 async function addToList(item, kind) {
@@ -420,7 +493,7 @@ async function resetList() {
   if (!game.user.isGM) return false;
   const data = await loadDefaultList();
   if (!data) return false;
-  await saveList(data);
+  await saveList(withKnownDefaults(data));
   ui.notifications.info(t("Notify.ListCreated", { count: data.features.length }));
   return true;
 }
@@ -461,6 +534,37 @@ function activationKind(item) {
   return null;
 }
 
+/** The item's description as plain lower-case text, or null when the system has none. */
+function descriptionText(item) {
+  const desc = item?.system?.description;
+  const html = typeof desc === "string" ? desc : desc?.value;
+  if (typeof html !== "string" || !html.trim()) return null;
+  return normalizeName(html.replace(/<[^>]*>/g, " "));
+}
+
+/**
+ * Does a "hit" entry apply to this item? Optional entry fields narrow same-named features of other editions:
+ * `activation` (dnd5e activation type the item must have, e.g. "reaction") and
+ * `requires` (text the item's description must contain, e.g. "melee attack").
+ */
+function hitEntryApplies(entry, item) {
+  if (entry.activation && systemHasActivations(item)) {
+    const types = activitiesOf(item).map(a => a?.activation?.type);
+    if (item?.system?.activation?.type) types.push(item.system.activation.type);
+    if (!types.includes(entry.activation)) return false;
+  }
+  if (entry.requires) {
+    const text = descriptionText(item);
+    if (text !== null && !text.includes(normalizeName(entry.requires))) return false;
+  }
+  return true;
+}
+
+/** Does a "hit" reminder trigger on this attack? Entries with attack "any" trigger on ranged hits too. */
+function hitTriggers(option, melee) {
+  return melee || option.entry?.attack === "any";
+}
+
 /** Best list entry for this item: one that names the creature first. */
 function bestEntry(entries, actor) {
   if (!entries.length) return null;
@@ -477,14 +581,25 @@ function kindOf(item) {
   const flag = item?.getFlag?.(MODULE_ID, "kind");
   const act = activationKind(item);
   const entries = findEntries(item?.name);
-  const entry = bestEntry(entries, item?.actor);
+  // "hit" entries only count through the hit check below, never as a legendary / lair fallback.
+  const entry = bestEntry(entries.filter(e => e.kind !== "hit"), item?.actor);
 
   if (flag === "none") return { kind: null, reason: "never" };
+  if (flag === "hit") {
+    return { kind: "hit", reason: "flag", entry: bestEntry(entries.filter(e => e.kind === "hit"), item?.actor), cost: null };
+  }
   if (KINDS.includes(flag)) return { kind: flag, reason: "flag", entry, cost: act?.cost ?? entry?.cost ?? null };
 
   const villainEntry = entries.find(e => e.kind === "villain");
   if (VILLAIN_NAME.test(item?.name ?? "") || villainEntry) {
     return { kind: "villain", reason: "villain", entry: villainEntry ?? entry, cost: act?.cost ?? (villainEntry ?? entry)?.cost ?? null };
+  }
+
+  // Traits that trigger when the creature is hit (Heated Body) need no activation, only the entry's own
+  // checks. A legendary or lair activation wins (the 2014 Mummy Lord's legendary Whirlwind of Sand).
+  const hitEntries = entries.filter(e => e.kind === "hit" && hitEntryApplies(e, item));
+  if (hitEntries.length && !act) {
+    return { kind: "hit", reason: "list", entry: bestEntry(hitEntries, item?.actor), cost: null };
   }
 
   if (act && setting("DetectByActivation")) {
@@ -667,6 +782,7 @@ async function configureItem(item) {
             ${opt("legendary", t("Kind.legendary"))}
             ${opt("villain", t("Kind.villain"))}
             ${opt("lair", t("Kind.lair"))}
+            ${opt("hit", t("Kind.hit"))}
             ${opt("never", t("Item.Never"))}
           </select>
         </div>
@@ -872,6 +988,7 @@ function renderGroup({ actor, points, options }) {
 }
 
 function costText(option) {
+  if (option.kind === "hit") return t(option.entry?.attack === "any" ? "Chat.OnHit" : "Chat.OnMeleeHit");
   const base = t("Chat.Cost", { cost: option.cost });
   return option.kind === "villain" ? `${base} · ${t("Chat.OncePerCombat")}` : base;
 }
@@ -1054,6 +1171,101 @@ Hooks.on("dnd5e.rollAbilitySave", (actor, roll, ability) => {
   }
 });
 
+/* -------------------------------------------- */
+/*  When hit by a melee attack (Heated Body)    */
+/* -------------------------------------------- */
+
+/** Is this dnd5e attack a melee attack? null when the message doesn't say. */
+function isMeleeAttack(message, roll) {
+  // A thrown melee weapon is a ranged attack.
+  if (/thrown/i.test(String(roll?.options?.attackMode ?? ""))) return false;
+  const flags = message.flags?.dnd5e ?? {};
+  const activity = message.getAssociatedActivity?.()
+    ?? (flags.activity?.uuid ? fromUuidSync(flags.activity.uuid, { strict: false }) : null);
+  const type = activity?.attack?.type?.value; // dnd5e 4.x+: "melee" | "ranged"
+  if (type) return type === "melee";
+  const item = activity?.item ?? message.getAssociatedItem?.() ?? null;
+  const action = item?.system?.actionType; // dnd5e 3.x: "mwak" | "msak" | "rwak" | "rsak"
+  if (action) return action === "mwak" || action === "msak";
+  return null;
+}
+
+/** Does the attack roll hit this AC? null when the AC isn't known. */
+function attackHits(roll, ac) {
+  if (roll.isFumble === true) return false; // natural 1
+  if (roll.isCritical === true) return true; // natural 20 (or the attacker's crit range)
+  const target = Number(ac);
+  if (ac === null || ac === undefined || !Number.isFinite(target)) return null;
+  return roll.total >= target;
+}
+
+/** The attacker of an attack message, for the card text. */
+function attackerName(message) {
+  const actor = ChatMessage.implementation.getSpeakerActor?.(message.speaker);
+  return message.speaker?.alias || displayName(actor) || message.alias || "";
+}
+
+// Fires on every client: only the active GM posts.
+Hooks.on("createChatMessage", message => {
+  try {
+    onAttackMessage(message);
+  } catch (err) {
+    console.error(`${MODULE_ID} | attack message`, err);
+  }
+});
+
+function onAttackMessage(message) {
+  if (!isResponsibleGM() || !setting("HitReminders")) return;
+  const flags = message.flags?.dnd5e;
+  if (flags?.roll?.type !== "attack") return;
+  const targets = Array.isArray(flags.targets) ? flags.targets : [];
+  if (!targets.length) return;
+  const roll = message.rolls?.[0];
+  if (!roll || !Number.isFinite(roll.total)) return;
+  const melee = isMeleeAttack(message, roll) === true;
+
+  const ignorePlayers = setting("IgnorePlayerOwned");
+  const groups = [];
+  for (const target of targets) {
+    if (attackHits(roll, target?.ac) !== true) continue;
+    const actor = target?.uuid ? fromUuidSync(target.uuid, { strict: false }) : null;
+    if (!(actor instanceof Actor)) continue;
+    if (ignorePlayers && actor.hasPlayerOwner) continue;
+    if (groups.some(g => g.actor === actor)) continue;
+    const options = findReminders(actor).filter(r => r.kind === "hit" && hitTriggers(r, melee));
+    if (options.length) groups.push({ actor, options, ac: target.ac });
+  }
+  if (groups.length) postHitCard(message, roll, groups, melee);
+}
+
+async function postHitCard(message, roll, groups, melee) {
+  const attacker = escapeHTML(attackerName(message));
+  const content = `
+    <div class="dxrm-card dxrm-hit">
+      <h3 class="dxrm-title"><i class="fa-solid fa-burst"></i> ${t(melee ? "Chat.HitTitle" : "Chat.HitTitleAny")}</h3>
+      ${groups.map(({ actor, options, ac }) => `
+        <div class="dxrm-group" data-actor-uuid="${escapeHTML(actor.uuid)}">
+          <div class="dxrm-header">
+            <img src="${escapeHTML(displayImg(actor))}" alt="">
+            <div class="dxrm-who">
+              <strong>${escapeHTML(displayName(actor))}</strong>
+            </div>
+          </div>
+          <p class="dxrm-text">${t(melee ? "Chat.HitText" : "Chat.HitTextAny", {
+            name: escapeHTML(displayName(actor)), attacker, total: roll.total, ac: escapeHTML(ac)
+          })}</p>
+          ${options.map(o => renderOption(actor, { ...o, kind: "hit" })).join("")}
+        </div>`).join("")}
+    </div>`;
+
+  return ChatMessage.implementation.create({
+    content,
+    speaker: { alias: t("Chat.Speaker") },
+    whisper: whisperTargets(),
+    flags: { [MODULE_ID]: { card: "hit", actorUuids: groups.map(g => g.actor.uuid) } }
+  });
+}
+
 /** Spend one legendary resistance: through the actor's Legendary Resistance item if it has one. */
 async function useResistance(actor) {
   const res = legendaryResistance(actor);
@@ -1097,7 +1309,7 @@ function refreshLabels(message, html) {
 
     for (const option of group.querySelectorAll(".dxrm-option")) {
       const kind = option.dataset.kind;
-      if (kind === "lair") continue;
+      if (kind === "lair" || kind === "hit") continue;
       const cost = Number(option.dataset.cost) || 1;
       const item = fromUuidSync(option.dataset.itemUuid);
       const used = kind === "villain" && villainUsed(combat, item);

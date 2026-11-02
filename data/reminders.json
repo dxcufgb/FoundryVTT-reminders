@@ -1,9 +1,10 @@
 {
  "version": 1,
- "matching": "An item counts as a reminder when its name matches an entry's name (or alias) and, in systems that say so (dnd5e), its activation is a legendary or lair action. match 'exact' ignores case, apostrophe style and text in parentheses; 'contains' matches anywhere in the item's name.",
+ "matching": "An item counts as a reminder when its name matches an entry's name (or alias) and, in systems that say so (dnd5e), its activation is a legendary or lair action. Entries of kind 'hit' (traits and reactions such as Heated Body or Parry) need no activation; their optional 'activation' (dnd5e activation type the item must have) and 'requires' (text its description must contain) tell them apart from same-named features of the other edition, and 'attack' is 'melee' (default) or 'any' (ranged hits too). A legendary or lair activation always wins over a 'hit' entry. match 'exact' ignores case, apostrophe style and text in parentheses; 'contains' matches anywhere in the item's name.",
  "kinds": {
   "legendary": "Legendary action: used right after another creature's turn, spending legendary action uses",
   "lair": "Lair action (2014): used on initiative count 20, losing ties",
+  "hit": "When hit: a trait or reaction that triggers when the creature is hit by an attack, melee only unless 'attack' is 'any' (dnd5e attack rolls with a target)",
   "custom": "Added by the GM from an item's context menu"
  },
  "features": [
@@ -2265,6 +2266,219 @@
    "effect": "Moves up to its Speed; creatures within 60 ft of where it stops lose Concentration and, if Medium or smaller, fall prone.",
    "match": "exact",
    "confirmed": true
+  },
+  {
+   "id": "2014-hit-heated-body",
+   "name": "Heated Body",
+   "kind": "hit",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Azer",
+    "Fire Snake",
+    "Remorhaz",
+    "Young Remorhaz",
+    "Salamander"
+   ],
+   "limit": null,
+   "effect": "A creature that touches it or hits it with a melee attack while within 5 ft takes fire damage: Azer 5 (1d10), Fire Snake 3 (1d6), Salamander 7 (2d6), Young Remorhaz 7 (2d6), Remorhaz 10 (3d6).",
+   "match": "exact",
+   "confirmed": true,
+   "attack": "melee",
+   "requires": "melee attack"
+  },
+  {
+   "id": "2014-hit-fire-aura",
+   "name": "Fire Aura",
+   "kind": "hit",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Balor"
+   ],
+   "limit": null,
+   "effect": "A creature that touches the balor or hits it with a melee attack while within 5 ft takes 10 (3d6) fire damage.",
+   "match": "exact",
+   "confirmed": true,
+   "attack": "melee",
+   "requires": "melee attack"
+  },
+  {
+   "id": "2014-hit-fire-form",
+   "name": "Fire Form",
+   "kind": "hit",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Fire Elemental"
+   ],
+   "limit": null,
+   "effect": "A creature that touches the elemental or hits it with a melee attack while within 5 ft takes 5 (1d10) fire damage.",
+   "match": "exact",
+   "confirmed": true,
+   "attack": "melee",
+   "requires": "melee attack"
+  },
+  {
+   "id": "hit-corrosive-form",
+   "name": "Corrosive Form",
+   "kind": "hit",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1, MM 2024 / SRD 5.2",
+   "creatures": [
+    "Black Pudding",
+    "Gray Ooze"
+   ],
+   "limit": null,
+   "effect": "Black Pudding: a melee hit within 5 ft (or a touch) deals 4 (1d8) acid damage to the attacker. Nonmagical weapons that hit corrode: a cumulative -1 (2014 metal or wood: damage rolls; 2024: attack rolls), destroyed at -5. Nonmagical ammunition that hits is destroyed. 2024 Gray Ooze: the weapon and ammunition parts only.",
+   "match": "exact",
+   "confirmed": true,
+   "attack": "any"
+  },
+  {
+   "id": "2014-hit-corrode-metal",
+   "name": "Corrode Metal",
+   "kind": "hit",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Gray Ooze"
+   ],
+   "limit": null,
+   "effect": "A nonmagical metal weapon that hits the ooze corrodes: cumulative -1 to damage rolls, destroyed at -5. Nonmagical metal ammunition that hits it is destroyed.",
+   "match": "exact",
+   "confirmed": true,
+   "attack": "any"
+  },
+  {
+   "id": "2014-hit-rust-metal",
+   "name": "Rust Metal",
+   "kind": "hit",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Rust Monster"
+   ],
+   "limit": null,
+   "effect": "A nonmagical metal weapon that hits the rust monster corrodes: cumulative -1 to damage rolls, destroyed at -5. Nonmagical metal ammunition that hits it is destroyed.",
+   "match": "exact",
+   "confirmed": true,
+   "attack": "any"
+  },
+  {
+   "id": "2024-hit-reflexive-antennae",
+   "name": "Reflexive Antennae",
+   "kind": "hit",
+   "cost": null,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Rust Monster"
+   ],
+   "limit": null,
+   "effect": "Reaction when an attack roll hits it: uses Antennae on one nonmagical metal armor or weapon worn or carried by a creature within 5 ft. Dex save or -1 to the armor's AC or the weapon's attack rolls (armor destroyed at AC 10, weapon at -5).",
+   "match": "exact",
+   "confirmed": true,
+   "attack": "any",
+   "activation": "reaction"
+  },
+  {
+   "id": "hit-parry",
+   "name": "Parry",
+   "kind": "hit",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1, MM 2024 / SRD 5.2",
+   "creatures": [
+    "Bandit Captain",
+    "Erinyes",
+    "Gladiator",
+    "Knight",
+    "Marilith",
+    "Noble",
+    "Warrior Veteran"
+   ],
+   "limit": null,
+   "effect": "Reaction (holding a melee weapon, 2014: and seeing the attacker): adds to its AC against this melee attack, possibly turning the hit into a miss. +2 Bandit Captain, Knight, Warrior Veteran, Noble (2024); +3 Gladiator, Noble (2014); +4 Erinyes; +5 Marilith.",
+   "match": "exact",
+   "confirmed": true,
+   "attack": "melee",
+   "activation": "reaction"
+  },
+  {
+   "id": "2024-hit-riposte",
+   "name": "Riposte",
+   "kind": "hit",
+   "cost": null,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Pirate Captain"
+   ],
+   "limit": null,
+   "effect": "Reaction when hit by a melee attack while holding a weapon: +3 AC against that attack; if it then misses, one Rapier attack against the attacker.",
+   "match": "exact",
+   "confirmed": true,
+   "attack": "melee",
+   "activation": "reaction",
+   "requires": "hit by a melee attack"
+  },
+  {
+   "id": "2024-hit-whirlwind-of-sand",
+   "name": "Whirlwind of Sand",
+   "kind": "hit",
+   "cost": null,
+   "edition": "2024",
+   "source": "MM 2024 / SRD 5.2",
+   "creatures": [
+    "Mummy Lord"
+   ],
+   "limit": null,
+   "effect": "Reaction when hit by an attack roll: +2 AC against it (possibly a miss), then teleports up to 60 ft to an unoccupied space it can see. Creatures of its choice within 5 ft of the destination are Blinded until the end of its next turn.",
+   "match": "exact",
+   "confirmed": true,
+   "attack": "any",
+   "activation": "reaction"
+  },
+  {
+   "id": "2014-hit-mucous-cloud",
+   "name": "Mucous Cloud",
+   "kind": "hit",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Aboleth"
+   ],
+   "limit": null,
+   "effect": "While underwater: a creature that touches the aboleth or hits it with a melee attack within 5 ft makes a DC 14 Con save or is diseased for 1d4 hours (can breathe only underwater).",
+   "match": "exact",
+   "confirmed": true,
+   "attack": "melee",
+   "requires": "melee attack"
+  },
+  {
+   "id": "2014-hit-damage-transfer",
+   "name": "Damage Transfer",
+   "kind": "hit",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Cloaker",
+    "Rug of Smothering"
+   ],
+   "limit": null,
+   "effect": "While attached to (cloaker) or grappling (rug) a creature, it takes only half the damage dealt to it and that creature takes the other half.",
+   "match": "exact",
+   "confirmed": true,
+   "attack": "any"
   }
  ],
  "creatures": [
