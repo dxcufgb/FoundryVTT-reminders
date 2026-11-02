@@ -44,6 +44,10 @@
  *   .exportList()                  -> downloads reminders-<world id>.json
  *   .importList()                  -> Promise<boolean>, file picker and confirmation, replaces the list
  *   .resetList()                   -> Promise<boolean>, replaces the list with the default one (no confirmation)
+ *
+ * On world start the active GM adds the default list's new entries to the world's list (setting
+ * "Add new actions from the default list"). The list's knownDefaults holds the default ids already
+ * offered, so actions the GM removed are not added again.
  */
 
 const MODULE_ID = "dxcufgbs-reminders";
@@ -115,6 +119,7 @@ Hooks.once("init", () => {
   reg("LairReminders", { type: Boolean, default: true });
   reg("HitReminders", { type: Boolean, default: true });
   reg("DetectByActivation", { type: Boolean, default: true });
+  reg("MergeDefaultList", { type: Boolean, default: true });
   reg("IgnorePlayerOwned", { type: Boolean, default: true });
   reg("WhisperGM", { type: Boolean, default: true });
   reg("DeletePrevious", { type: Boolean, default: true });
@@ -285,12 +290,73 @@ function customEntry(name, { item = null, kind = "legendary" } = {}) {
   };
 }
 
+/** Remember every default entry as offered, so a later merge doesn't bring back removed ones. */
+function withKnownDefaults(data) {
+  data.knownDefaults = data.features.map(f => f?.id).filter(Boolean);
+  return data;
+}
+
+/**
+ * Add the default list's new entries to a world's list. Each default entry (by id) is offered once:
+ * entries the GM removed or edited stay that way. Without `knownDefaults` (lists from before this, or
+ * imported files) the entries already in the list count as offered.
+ * @returns {{data: object, added: object[], changed: boolean}}
+ */
+function mergeDefaults(current, defaults) {
+  const data = foundry.utils.deepClone(current);
+  const hadKnown = Array.isArray(data.knownDefaults);
+  const known = new Set(hadKnown ? data.knownDefaults : data.features.map(f => f?.id).filter(Boolean));
+  const ids = new Set(data.features.map(f => f?.id).filter(Boolean));
+  const sameEntry = entry => data.features.some(f =>
+    normalizeName(f?.name) === normalizeName(entry.name) && (f?.kind ?? "legendary") === (entry.kind ?? "legendary"));
+
+  const added = [];
+  for (const entry of defaults?.features ?? []) {
+    if (!entry?.id || typeof entry.name !== "string" || known.has(entry.id)) continue;
+    known.add(entry.id);
+    // Already there (same id, or the GM added the same action by hand): nothing to add.
+    if (ids.has(entry.id) || sameEntry(entry)) continue;
+    const copy = foundry.utils.deepClone(entry);
+    data.features.push(copy);
+    added.push(copy);
+  }
+
+  let kindsAdded = false;
+  if (defaults?.kinds && typeof defaults.kinds === "object") {
+    data.kinds = data.kinds && typeof data.kinds === "object" ? data.kinds : {};
+    for (const [key, text] of Object.entries(defaults.kinds)) {
+      if (!(key in data.kinds)) {
+        data.kinds[key] = text;
+        kindsAdded = true;
+      }
+    }
+  }
+
+  const knownChanged = !hadKnown || known.size !== data.knownDefaults.length;
+  data.knownDefaults = [...known];
+  return { data, added, changed: added.length > 0 || kindsAdded || knownChanged };
+}
+
+/** On world start: create the list from the default one, or add the default list's new entries to it. */
 async function ensureList() {
-  if (getList() || !isResponsibleGM()) return;
-  const data = await loadDefaultList();
-  if (!data) return;
+  if (!isResponsibleGM()) return;
+  const current = getList();
+  if (current && !setting("MergeDefaultList")) return;
+
+  const defaults = await loadDefaultList();
+  if (!defaults) return;
+  if (!current) {
+    await saveList(withKnownDefaults(defaults));
+    ui.notifications.info(t("Notify.ListCreated", { count: defaults.features.length }));
+    return;
+  }
+
+  const { data, added, changed } = mergeDefaults(current, defaults);
+  if (!changed) return;
   await saveList(data);
-  ui.notifications.info(t("Notify.ListCreated", { count: data.features.length }));
+  if (added.length) {
+    ui.notifications.info(t("Notify.ListMerged", { count: added.length, names: added.map(e => e.name).join(", ") }));
+  }
 }
 
 async function addToList(item, kind) {
@@ -425,7 +491,7 @@ async function resetList() {
   if (!game.user.isGM) return false;
   const data = await loadDefaultList();
   if (!data) return false;
-  await saveList(data);
+  await saveList(withKnownDefaults(data));
   ui.notifications.info(t("Notify.ListCreated", { count: data.features.length }));
   return true;
 }

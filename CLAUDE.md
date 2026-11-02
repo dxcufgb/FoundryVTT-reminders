@@ -16,7 +16,10 @@ and no npm dependencies.
   on a dnd5e attack message → `onAttackMessage` → `postHitCard`), card buttons and live labels (`refreshLabels`,
   `refreshCardsFor`), `useItem`, and the module API (`game.modules.get("dxcufgbs-reminders").api`).
 - `data/reminders.json` – the default list (`version`, `matching`, `kinds`, `features`, `creatures`): the legendary
-  and lair actions of the 2014 and 2024 Monster Manuals, plus when-hit traits (Heated Body). Copied into each world on first GM start.
+  and lair actions of the 2014 and 2024 Monster Manuals, plus when-hit traits (Heated Body). Copied into each world on first GM
+  start; on later starts `mergeDefaults` adds new default entries (by `id`) once (setting `MergeDefaultList`). The
+  world's list keeps the offered ids in `knownDefaults`, so removed entries stay removed; default entries need a
+  stable, unique `id`.
 - `styles/reminders.css` – cards and dialogs. `lang/en.json` – all strings (`DXRM.*`).
 - `.github/workflows/ci.yml` / `release.yml` – thin callers of `dxcufgb/foundry-module-ci` (checks, packaging,
   release); identical in every module, do not edit them here. `claude.yml` – the Claude review.
@@ -30,7 +33,7 @@ and no npm dependencies.
 - Update `README.md` when behaviour, settings or the API change.
 
 ## Review focus
-- **One client posts**: turn and lair cards (`onTurnChange`) and the first list setup (`ensureList`) run only where
+- **One client posts**: turn and lair cards (`onTurnChange`) and the list setup and merge (`ensureList`) run only where
   `isResponsibleGM()` is true (`game.user.isGM && game.users.activeGM?.isSelf`), because `combatTurnChange` fires on
   every client. The when-hit card (`onAttackMessage`) runs from `createChatMessage`, which also fires on every client, so
   it uses `isResponsibleGM()` too. The legendary resistance card and villain tracking run from dnd5e roll/use hooks that fire only on
