@@ -14,8 +14,9 @@
  *     In dnd5e the creature's lair setting (resources.lair.value) must be on.
  *   - Legendary resistance: a whisper when a creature fails a saving throw and still has uses left,
  *     with a button that spends one.
- *   - When hit (dnd5e): a whisper when a creature with a "hit" trait (Heated Body) is hit by a melee
- *     attack, read from the attack roll's chat message (its targets and their AC).
+ *   - When hit (dnd5e): a whisper when a creature with a "hit" trait (Heated Body, Parry, Rust Metal...)
+ *     is hit by an attack, read from the attack roll's chat message (its targets and their AC). Entries
+ *     trigger on melee hits, or on any hit with attack: "any".
  *
  * What counts as a reminder action:
  *   - dnd5e items whose activation is "legendary" or "lair" (setting "Also detect by activation type").
@@ -24,7 +25,8 @@
  *     In dnd5e a list match for a legendary or lair entry also needs a legendary or lair activation,
  *     so a creature's ordinary "Bite" doesn't count just because the vampire's legendary Bite is listed.
  *   - Items named "... Villain Action ..." and list entries of kind "villain".
- *   - List entries of kind "hit" (traits like Heated Body): matched by name alone, no activation needed.
+ *   - List entries of kind "hit" (traits like Heated Body): matched by name, no activation needed; the
+ *     entry's optional `activation` and `requires` (description text) tell same-named features apart.
  *   - The item's own setting wins: sheet header button "Reminder" -> Automatic / Legendary / Villain /
  *     Lair / When hit / Never, or item.setFlag("dxcufgbs-reminders", "kind",
  *     "legendary" | "villain" | "lair" | "hit" | "none").
@@ -532,6 +534,37 @@ function activationKind(item) {
   return null;
 }
 
+/** The item's description as plain lower-case text, or null when the system has none. */
+function descriptionText(item) {
+  const desc = item?.system?.description;
+  const html = typeof desc === "string" ? desc : desc?.value;
+  if (typeof html !== "string" || !html.trim()) return null;
+  return normalizeName(html.replace(/<[^>]*>/g, " "));
+}
+
+/**
+ * Does a "hit" entry apply to this item? Optional entry fields narrow same-named features of other editions:
+ * `activation` (dnd5e activation type the item must have, e.g. "reaction") and
+ * `requires` (text the item's description must contain, e.g. "melee attack").
+ */
+function hitEntryApplies(entry, item) {
+  if (entry.activation && systemHasActivations(item)) {
+    const types = activitiesOf(item).map(a => a?.activation?.type);
+    if (item?.system?.activation?.type) types.push(item.system.activation.type);
+    if (!types.includes(entry.activation)) return false;
+  }
+  if (entry.requires) {
+    const text = descriptionText(item);
+    if (text !== null && !text.includes(normalizeName(entry.requires))) return false;
+  }
+  return true;
+}
+
+/** Does a "hit" reminder trigger on this attack? Entries with attack "any" trigger on ranged hits too. */
+function hitTriggers(option, melee) {
+  return melee || option.entry?.attack === "any";
+}
+
 /** Best list entry for this item: one that names the creature first. */
 function bestEntry(entries, actor) {
   if (!entries.length) return null;
@@ -548,9 +581,13 @@ function kindOf(item) {
   const flag = item?.getFlag?.(MODULE_ID, "kind");
   const act = activationKind(item);
   const entries = findEntries(item?.name);
-  const entry = bestEntry(entries, item?.actor);
+  // "hit" entries only count through the hit check below, never as a legendary / lair fallback.
+  const entry = bestEntry(entries.filter(e => e.kind !== "hit"), item?.actor);
 
   if (flag === "none") return { kind: null, reason: "never" };
+  if (flag === "hit") {
+    return { kind: "hit", reason: "flag", entry: bestEntry(entries.filter(e => e.kind === "hit"), item?.actor), cost: null };
+  }
   if (KINDS.includes(flag)) return { kind: flag, reason: "flag", entry, cost: act?.cost ?? entry?.cost ?? null };
 
   const villainEntry = entries.find(e => e.kind === "villain");
@@ -558,9 +595,12 @@ function kindOf(item) {
     return { kind: "villain", reason: "villain", entry: villainEntry ?? entry, cost: act?.cost ?? (villainEntry ?? entry)?.cost ?? null };
   }
 
-  // Traits that trigger when the creature is hit (Heated Body) are passive: the name is enough.
-  const hitEntries = entries.filter(e => e.kind === "hit");
-  if (hitEntries.length) return { kind: "hit", reason: "list", entry: bestEntry(hitEntries, item?.actor), cost: null };
+  // Traits that trigger when the creature is hit (Heated Body) need no activation, only the entry's own
+  // checks. A legendary or lair activation wins (the 2014 Mummy Lord's legendary Whirlwind of Sand).
+  const hitEntries = entries.filter(e => e.kind === "hit" && hitEntryApplies(e, item));
+  if (hitEntries.length && !act) {
+    return { kind: "hit", reason: "list", entry: bestEntry(hitEntries, item?.actor), cost: null };
+  }
 
   if (act && setting("DetectByActivation")) {
     return { kind: act.kind, reason: "activation", entry, cost: act.cost ?? entry?.cost ?? null };
@@ -948,7 +988,7 @@ function renderGroup({ actor, points, options }) {
 }
 
 function costText(option) {
-  if (option.kind === "hit") return t("Chat.OnMeleeHit");
+  if (option.kind === "hit") return t(option.entry?.attack === "any" ? "Chat.OnHit" : "Chat.OnMeleeHit");
   const base = t("Chat.Cost", { cost: option.cost });
   return option.kind === "villain" ? `${base} · ${t("Chat.OncePerCombat")}` : base;
 }
@@ -1182,7 +1222,7 @@ function onAttackMessage(message) {
   if (!targets.length) return;
   const roll = message.rolls?.[0];
   if (!roll || !Number.isFinite(roll.total)) return;
-  if (isMeleeAttack(message, roll) !== true) return;
+  const melee = isMeleeAttack(message, roll) === true;
 
   const ignorePlayers = setting("IgnorePlayerOwned");
   const groups = [];
@@ -1192,17 +1232,17 @@ function onAttackMessage(message) {
     if (!(actor instanceof Actor)) continue;
     if (ignorePlayers && actor.hasPlayerOwner) continue;
     if (groups.some(g => g.actor === actor)) continue;
-    const options = findReminders(actor).filter(r => r.kind === "hit");
+    const options = findReminders(actor).filter(r => r.kind === "hit" && hitTriggers(r, melee));
     if (options.length) groups.push({ actor, options, ac: target.ac });
   }
-  if (groups.length) postHitCard(message, roll, groups);
+  if (groups.length) postHitCard(message, roll, groups, melee);
 }
 
-async function postHitCard(message, roll, groups) {
+async function postHitCard(message, roll, groups, melee) {
   const attacker = escapeHTML(attackerName(message));
   const content = `
     <div class="dxrm-card dxrm-hit">
-      <h3 class="dxrm-title"><i class="fa-solid fa-burst"></i> ${t("Chat.HitTitle")}</h3>
+      <h3 class="dxrm-title"><i class="fa-solid fa-burst"></i> ${t(melee ? "Chat.HitTitle" : "Chat.HitTitleAny")}</h3>
       ${groups.map(({ actor, options, ac }) => `
         <div class="dxrm-group" data-actor-uuid="${escapeHTML(actor.uuid)}">
           <div class="dxrm-header">
@@ -1211,7 +1251,7 @@ async function postHitCard(message, roll, groups) {
               <strong>${escapeHTML(displayName(actor))}</strong>
             </div>
           </div>
-          <p class="dxrm-text">${t("Chat.HitText", {
+          <p class="dxrm-text">${t(melee ? "Chat.HitText" : "Chat.HitTextAny", {
             name: escapeHTML(displayName(actor)), attacker, total: roll.total, ac: escapeHTML(ac)
           })}</p>
           ${options.map(o => renderOption(actor, { ...o, kind: "hit" })).join("")}

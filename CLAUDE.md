@@ -58,5 +58,8 @@ and no npm dependencies.
   legendary/lair name only counts with a matching activation (`systemHasActivations`), so a generic "Bite" is not a
   reminder; keep that.
 - **List data contract**: `validateImport` must keep rejecting files without a `features` array or with an unnamed
-  entry; `kind` is `legendary` / `villain` / `lair` / `hit` (`hit` entries match by name alone, no activation needed), `match` is `exact` / `contains`. Changing an entry's `name` or
+  entry; `kind` is `legendary` / `villain` / `lair` / `hit`. `hit` entries need no activation; their optional `activation`
+  (required dnd5e activation type), `requires` (text the item's description must contain) and `attack` (`melee`, the
+  default, or `any`) keep same-named features of the other edition apart (2014 vs 2024 Fire Aura), and a legendary or
+  lair activation always wins over a `hit` entry (the 2014 Mummy Lord's Whirlwind of Sand); `match` is `exact` / `contains`. Changing an entry's `name` or
   `match` changes matching in every world that copies the default list.
