@@ -1,7 +1,7 @@
 {
   "id": "dxcufgbs-reminders",
   "title": "Dxcufgb's Reminders",
-  "description": "Keeps legendary actions, villain actions, lair actions and legendary resistances in the GM's chat at the right moments. Cards list each option with its cost and the points remaining; expand Use an Action for native dnd5e Use buttons that spend legendary points through the system pipeline. Each world keeps its own editable Reminder list (the legendary and lair actions of the 2014 and 2024 Monster Manuals).",
+  "description": "Keeps legendary actions, villain actions, lair actions, legendary resistances, when-hit traits and death triggers in the GM's chat at the right moments. Cards list each option with its cost and the points remaining; expand Use an Action for native dnd5e Use buttons that spend legendary points through the system pipeline. When a creature with a death-triggered feature (Undead Fortitude, Death Burst...) drops to 0 HP, the GM gets a card with a sound and a Use button (this replaces Dxcufgb's Death Trigger Alerts). Each world keeps its own editable Reminder list.",
   "version": "1.0.0",
   "authors": [
     {

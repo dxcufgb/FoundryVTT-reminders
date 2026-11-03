@@ -15,6 +15,15 @@
   background: rgba(138, 46, 18, 0.08);
 }
 
+.dxrm-card.dxrm-death {
+  border-color: #4a1020;
+  background: rgba(74, 16, 32, 0.1);
+}
+
+.dxrm-card.dxrm-death .dxrm-title {
+  color: #8b1a1a;
+}
+
 .dxrm-card.dxrm-resist {
   border-color: #2b4a7a;
   background: rgba(43, 74, 122, 0.08);

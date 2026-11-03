@@ -17,6 +17,11 @@
  *   - When hit (dnd5e): a whisper when a creature with a "hit" trait (Heated Body, Parry, Rust Metal...)
  *     is hit by an attack, read from the attack roll's chat message (its targets and their AC). Entries
  *     trigger on melee hits, or on any hit with attack: "any".
+ *   - Death triggers: a whisper (with its own sound) when a creature with a "death" feature (Undead
+ *     Fortitude, Death Burst, Relentless Endurance...) drops to 0 HP. HP comes from the HpPath setting or
+ *     the system's primary token attribute, so this works in any system. This used to be the separate
+ *     Death Trigger Alerts module (dxcufgbs-death-trigger): while that module is still on, these cards
+ *     wait, and on the first start its world list is moved into the Reminder list once.
  *
  * What counts as a reminder action:
  *   - dnd5e items whose activation is "legendary" or "lair" (setting "Also detect by activation type").
@@ -27,9 +32,11 @@
  *   - Items named "... Villain Action ..." and list entries of kind "villain".
  *   - List entries of kind "hit" (traits like Heated Body): matched by name, no activation needed; the
  *     entry's optional `activation` and `requires` (description text) tell same-named features apart.
+ *   - List entries of kind "death": matched by name, no activation needed.
  *   - The item's own setting wins: sheet header button "Reminder" -> Automatic / Legendary / Villain /
- *     Lair / When hit / Never, or item.setFlag("dxcufgbs-reminders", "kind",
- *     "legendary" | "villain" | "lair" | "hit" | "none").
+ *     Lair / When hit / Death trigger / Never, or item.setFlag("dxcufgbs-reminders", "kind",
+ *     "legendary" | "villain" | "lair" | "hit" | "death" | "none"). The old Death Trigger Alerts flag
+ *     (flags["dxcufgbs-death-trigger"].trigger true / false) still counts when this one isn't set.
  *
  * API: game.modules.get("dxcufgbs-reminders").api (set on ready)
  *   .findReminders(actor)          -> [{ item, kind, cost, entry }] (cost defaults to 1, entry may be null)
@@ -38,8 +45,11 @@
  *   .legendaryResistance(actor)    -> { value, max } | null (system.resources.legres)
  *   .getList()                     -> this world's Reminder list | null
  *   .isListed(nameOrItem)          -> boolean
+ *   .hpPathFor(actor)              -> the HP path inside actor.system that the death check watches
  *   GM only (players get false / null / nothing):
  *   .remindNow(combat = game.combat) -> Promise<ChatMessage | null>, posts the legendary / villain card now
+ *   .deathAlert(actor, items?)     -> Promise<ChatMessage | null>, posts the death trigger card now
+ *                                     (items: Item[] or findReminders() results; default: its death triggers)
  *   .addToList(itemOrName, kind?)  -> Promise<boolean>
  *   .removeFromList(nameOrItem)    -> Promise<boolean>
  *   .configureItem(item)           -> opens the item's Reminder dialog
@@ -55,11 +65,24 @@
 const MODULE_ID = "dxcufgbs-reminders";
 const LIST_KEY = "ReminderList";
 const DEFAULT_LIST_PATH = `modules/${MODULE_ID}/data/reminders.json`;
-const KINDS = ["legendary", "villain", "lair", "hit"];
+const KINDS = ["legendary", "villain", "lair", "hit", "death"];
+/** Kinds that need no activation and only count through their own check (attack hit, 0 HP). */
+const PASSIVE_KINDS = ["hit", "death"];
 const VILLAIN_NAME = /villain\s+action/i;
+
+/** The old Death Trigger Alerts module, now part of this one (its list and item flags are read once). */
+const DEATH_MODULE_ID = "dxcufgbs-death-trigger";
+const PREV_HP_KEY = "dxrmPrevHp";
+/** Death trigger groups as they appear in the default list's deathTriggers (the Trigger.* strings). */
+const DEATH_TRIGGERS = [
+  "creature_dies_nearby", "you_kill", "marked_target_dies", "ally_or_enemy_zero_hp_nearby",
+  "self_would_drop_to_0", "self_dies", "companion_dies", "death_save"
+];
 
 /** Lair cards already posted, as "combatId:round". */
 const lairDone = new Set();
+/** Actors (by uuid) that already got a death card while at 0 HP. Cleared when their HP goes above 0. */
+const deathAlerted = new Set();
 
 /* -------------------------------------------- */
 /*  Settings                                    */
@@ -96,6 +119,14 @@ Hooks.once("init", () => {
     onChange: () => { listCache = null; }
   });
 
+  // Set once the old Death Trigger Alerts list of this world has been moved into the Reminder list.
+  game.settings.register(MODULE_ID, "DeathMigrated", {
+    scope: "world",
+    config: false,
+    type: Boolean,
+    default: false
+  });
+
   game.settings.registerMenu(MODULE_ID, "ExportList", {
     name: "DXRM.Settings.ExportList.Name",
     label: "DXRM.Settings.ExportList.Label",
@@ -120,6 +151,8 @@ Hooks.once("init", () => {
   reg("ResistanceReminders", { type: Boolean, default: true });
   reg("LairReminders", { type: Boolean, default: true });
   reg("HitReminders", { type: Boolean, default: true });
+  reg("DeathReminders", { type: Boolean, default: true });
+  reg("HpPath", { type: String, default: "" });
   reg("DetectByActivation", { type: Boolean, default: true });
   reg("MergeDefaultList", { type: Boolean, default: true });
   reg("IgnorePlayerOwned", { type: Boolean, default: true });
@@ -131,6 +164,7 @@ Hooks.once("init", () => {
     default: 0.5,
     range: { min: 0, max: 1, step: 0.05 }
   });
+  reg("DeathSound", { type: String, default: "sounds/drums.wav", filePicker: "audio" });
 });
 
 Hooks.once("ready", async () => {
@@ -138,14 +172,17 @@ Hooks.once("ready", async () => {
   if (mod) {
     mod.api = {
       findReminders, remindNow, legendaryPoints, legendaryResistance, kindOf, configureItem,
-      getList, isListed, addToList, removeFromList, exportList, importList: importListFlow, resetList
+      getList, isListed, addToList, removeFromList, exportList, importList: importListFlow, resetList,
+      deathAlert, hpPathFor
     };
   }
   try {
     await ensureList();
+    await migrateDeathList();
   } catch (err) {
     console.error(`${MODULE_ID} | ensureList`, err);
   }
+  if (isResponsibleGM() && deathModuleActive()) ui.notifications.warn(t("Notify.DeathModuleActive"), { permanent: true });
 });
 
 /* -------------------------------------------- */
@@ -359,6 +396,82 @@ async function ensureList() {
   if (added.length) {
     ui.notifications.info(t("Notify.ListMerged", { count: added.length, names: added.map(e => e.name).join(", ") }));
   }
+}
+
+/** Is the old Death Trigger Alerts module still on? It posts its own death cards, so ours wait. */
+function deathModuleActive() {
+  return !!game.modules.get(DEATH_MODULE_ID)?.active;
+}
+
+/** A world setting stored by another (possibly disabled) module, parsed, or null. */
+function storedWorldSetting(key) {
+  try {
+    const doc = game.settings.storage.get("world")?.getSetting?.(key);
+    if (!doc) return null;
+    let value = doc.value;
+    if (typeof value === "string") {
+      try { value = JSON.parse(value); } catch { return null; }
+    }
+    return value && typeof value === "object" ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Once per world: move the old Death Trigger Alerts list into the Reminder list. The GM's own entries
+ * come over as death triggers, and default death triggers the GM had removed there are removed here too
+ * (they are already in knownDefaults, so they don't come back). Item flags of the old module are read
+ * directly by kindOf, so they need no migration.
+ */
+async function migrateDeathList() {
+  if (!isResponsibleGM() || setting("DeathMigrated")) return;
+  const current = getList();
+  if (!current) return; // no list yet (the default list failed to load): try again on the next start
+
+  const old = storedWorldSetting(`${DEATH_MODULE_ID}.TriggerList`);
+  if (Array.isArray(old?.features)) {
+    const defaults = await loadDefaultList();
+    if (!defaults) return;
+    const data = foundry.utils.deepClone(current);
+    const oldIds = new Set(old.features.map(f => f?.id).filter(Boolean));
+    const oldVersion = Number.isInteger(Number(old.version)) && Number(old.version) > 0 ? Number(old.version) : 1;
+    const defaultDeath = defaults.features.filter(f => f?.kind === "death" && String(f.id ?? "").startsWith("death-"));
+    const oldIdOf = entry => entry.id.slice("death-".length);
+    const defaultOldIds = new Set(defaultDeath.map(oldIdOf));
+
+    // Default death triggers that the old list had been offered but no longer has: the GM removed them.
+    const removed = new Set(defaultDeath
+      .filter(f => !oldIds.has(oldIdOf(f)) && (Number(f.deathListVersion) || 1) <= oldVersion)
+      .map(f => f.id));
+    const before = data.features.length;
+    data.features = data.features.filter(f => !removed.has(f?.id));
+    const removedCount = before - data.features.length;
+
+    // Everything else in the old list (added from items, imported) comes over as a death trigger.
+    const added = [];
+    for (const entry of old.features) {
+      if (!entry || typeof entry !== "object" || typeof entry.name !== "string" || !entry.name.trim()) continue;
+      if (entry.id && defaultOldIds.has(entry.id)) continue;
+      const id = `death-${entry.id ?? foundry.utils.randomID(8)}`;
+      const exists = data.features.some(f => f?.id === id
+        || (f?.kind === "death" && normalizeName(f?.name) === normalizeName(entry.name)));
+      if (exists) continue;
+      const copy = foundry.utils.deepClone(entry);
+      copy.featureType = copy.type ?? null;
+      delete copy.type;
+      delete copy.listVersion;
+      Object.assign(copy, { id, kind: "death", cost: null, creatures: copy.owner ? [copy.owner] : [] });
+      data.features.push(copy);
+      added.push(copy.name);
+    }
+
+    if (removedCount || added.length) {
+      await saveList(data);
+      ui.notifications.info(t("Notify.DeathMigrated", { added: added.length, removed: removedCount }));
+    }
+  }
+  await game.settings.set(MODULE_ID, "DeathMigrated", true);
 }
 
 async function addToList(item, kind) {
@@ -581,14 +694,21 @@ function kindOf(item) {
   const flag = item?.getFlag?.(MODULE_ID, "kind");
   const act = activationKind(item);
   const entries = findEntries(item?.name);
-  // "hit" entries only count through the hit check below, never as a legendary / lair fallback.
-  const entry = bestEntry(entries.filter(e => e.kind !== "hit"), item?.actor);
+  const entriesOf = kind => entries.filter(e => e.kind === kind);
+  // "hit" and "death" entries only count through their own checks below, never as a legendary / lair fallback.
+  const entry = bestEntry(entries.filter(e => !PASSIVE_KINDS.includes(e.kind)), item?.actor);
 
   if (flag === "none") return { kind: null, reason: "never" };
-  if (flag === "hit") {
-    return { kind: "hit", reason: "flag", entry: bestEntry(entries.filter(e => e.kind === "hit"), item?.actor), cost: null };
+  if (PASSIVE_KINDS.includes(flag)) {
+    return { kind: flag, reason: "flag", entry: bestEntry(entriesOf(flag), item?.actor), cost: null };
   }
   if (KINDS.includes(flag)) return { kind: flag, reason: "flag", entry, cost: act?.cost ?? entry?.cost ?? null };
+
+  // The old Death Trigger Alerts item setting: true = always a death trigger, false = never one.
+  const oldDeath = oldDeathFlag(item);
+  if (oldDeath === true) {
+    return { kind: "death", reason: "flag", entry: bestEntry(entriesOf("death"), item?.actor), cost: null };
+  }
 
   const villainEntry = entries.find(e => e.kind === "villain");
   if (VILLAIN_NAME.test(item?.name ?? "") || villainEntry) {
@@ -600,6 +720,12 @@ function kindOf(item) {
   const hitEntries = entries.filter(e => e.kind === "hit" && hitEntryApplies(e, item));
   if (hitEntries.length && !act) {
     return { kind: "hit", reason: "list", entry: bestEntry(hitEntries, item?.actor), cost: null };
+  }
+
+  // Death triggers (Undead Fortitude, Death Burst) need no activation either; checked at 0 HP.
+  const deathEntries = entriesOf("death");
+  if (deathEntries.length && !act && oldDeath !== false) {
+    return { kind: "death", reason: "list", entry: bestEntry(deathEntries, item?.actor), cost: null };
   }
 
   if (act && setting("DetectByActivation")) {
@@ -616,6 +742,12 @@ function kindOf(item) {
     return { kind: entry.kind ?? "legendary", reason: "list", entry, cost: entry.cost ?? null };
   }
   return { kind: null, reason: "none" };
+}
+
+/** The old Death Trigger Alerts flag on an item (read without getFlag: that module may be disabled). */
+function oldDeathFlag(item) {
+  const value = getProp(item ?? {}, `flags.${DEATH_MODULE_ID}.trigger`);
+  return typeof value === "boolean" ? value : undefined;
 }
 
 /** All reminder actions on an actor. */
@@ -669,6 +801,7 @@ Hooks.on("dnd5e.postUseActivity", activity => {
 /* -------------------------------------------- */
 
 const MENU_ADD = "DXRM.Context.Add";
+const MENU_ADD_DEATH = "DXRM.Context.AddDeath";
 const MENU_REMOVE = "DXRM.Context.Remove";
 
 const elementOf = li => (li?.dataset ? li : li?.[0]) ?? null;
@@ -694,6 +827,20 @@ function listMenuOptions(resolve) {
         if (!tg) return;
         const item = await tg.get?.().catch?.(() => null) ?? null;
         await addToList(item ?? tg.name);
+      }
+    },
+    {
+      name: MENU_ADD_DEATH,
+      icon: '<i class="fa-solid fa-skull"></i>',
+      condition: li => {
+        const tg = game.user.isGM && target(li);
+        return !!tg?.name && !isListed(tg.name);
+      },
+      callback: async li => {
+        const tg = target(li);
+        if (!tg) return;
+        const item = await tg.get?.().catch?.(() => null) ?? null;
+        await addToList(item ?? tg.name, "death");
       }
     },
     {
@@ -763,7 +910,8 @@ function statusText(status) {
 async function configureItem(item) {
   if (!game.user.isGM || !item) return;
   const flag = item.getFlag(MODULE_ID, "kind");
-  const current = flag === "none" ? "never" : KINDS.includes(flag) ? flag : "auto";
+  const oldDeath = oldDeathFlag(item);
+  const current = flag === "none" ? "never" : KINDS.includes(flag) ? flag : oldDeath === true ? "death" : "auto";
 
   // What would happen without the item's own setting?
   const auto = kindOf({ name: item.name, actor: item.actor, system: item.system, getFlag: () => undefined });
@@ -783,6 +931,7 @@ async function configureItem(item) {
             ${opt("villain", t("Kind.villain"))}
             ${opt("lair", t("Kind.lair"))}
             ${opt("hit", t("Kind.hit"))}
+            ${opt("death", t("Kind.death"))}
             ${opt("never", t("Item.Never"))}
           </select>
         </div>
@@ -800,10 +949,14 @@ async function configureItem(item) {
       { action: "cancel", label: game.i18n.localize("Cancel"), icon: "fa-solid fa-xmark" }
     ]
   });
-  if (!mode || mode === "cancel" || mode === current) return;
+  if (!mode || mode === "cancel" || (mode === current && oldDeath === undefined)) return;
 
-  if (mode === "auto") await item.unsetFlag(MODULE_ID, "kind");
-  else await item.setFlag(MODULE_ID, "kind", mode === "never" ? "none" : mode);
+  // Saving replaces the old Death Trigger Alerts setting of the item, if it has one.
+  const update = mode === "auto"
+    ? { [`flags.${MODULE_ID}.-=kind`]: null }
+    : { [`flags.${MODULE_ID}.kind`]: mode === "never" ? "none" : mode };
+  if (oldDeath !== undefined) update[`flags.${DEATH_MODULE_ID}.-=trigger`] = null;
+  await item.update(update);
   ui.notifications.info(t("Notify.Set", { item: item.name }));
 }
 
@@ -989,6 +1142,10 @@ function renderGroup({ actor, points, options }) {
 
 function costText(option) {
   if (option.kind === "hit") return t(option.entry?.attack === "any" ? "Chat.OnHit" : "Chat.OnMeleeHit");
+  if (option.kind === "death") {
+    const trigger = option.entry?.trigger;
+    return DEATH_TRIGGERS.includes(trigger) ? t(`Trigger.${trigger}`) : t("Chat.OnDeath");
+  }
   const base = t("Chat.Cost", { cost: option.cost });
   return option.kind === "villain" ? `${base} · ${t("Chat.OncePerCombat")}` : base;
 }
@@ -1285,12 +1442,126 @@ async function useResistance(actor) {
 }
 
 /* -------------------------------------------- */
+/*  Death triggers (0 HP)                       */
+/* -------------------------------------------- */
+
+/**
+ * Path inside actor.system that holds the current HP number: the HpPath setting, otherwise the
+ * system's primary token attribute (dnd5e: attributes.hp.value).
+ */
+function hpPathFor(actor) {
+  const custom = String(setting("HpPath") ?? "").trim();
+  if (custom) return custom.replace(/^system\./, "");
+  const attr = game.system.primaryTokenAttribute || "attributes.hp";
+  const val = getProp(actor?.system ?? {}, attr);
+  if (val && typeof val === "object" && "value" in val) return `${attr}.value`;
+  return attr;
+}
+
+function currentHp(actor) {
+  const v = Number(getProp(actor?.system ?? {}, hpPathFor(actor)));
+  return Number.isFinite(v) ? v : null;
+}
+
+// Remember the HP before the update (on the client that makes it); it travels with the update options.
+Hooks.on("preUpdateActor", (actor, changes, options) => {
+  try {
+    if (!foundry.utils.hasProperty(changes, `system.${hpPathFor(actor)}`)) return;
+    options[PREV_HP_KEY] = currentHp(actor);
+  } catch (err) {
+    console.error(`${MODULE_ID} | preUpdateActor`, err);
+  }
+});
+
+// Fires on every client: only the active GM posts.
+Hooks.on("updateActor", (actor, changes, options) => {
+  try {
+    checkDeath(actor, changes, options);
+  } catch (err) {
+    console.error(`${MODULE_ID} | updateActor`, err);
+  }
+});
+
+// Fallback for unlinked tokens, in case the actor hook doesn't fire for synthetic actors.
+Hooks.on("updateToken", (tokenDoc, changes, options) => {
+  try {
+    if (tokenDoc.actorLink || !changes.delta?.system || !tokenDoc.actor) return;
+    const system = { system: changes.delta.system };
+    if (!foundry.utils.hasProperty(system, `system.${hpPathFor(tokenDoc.actor)}`)) return;
+    checkDeath(tokenDoc.actor, system, options);
+  } catch (err) {
+    console.error(`${MODULE_ID} | updateToken`, err);
+  }
+});
+
+function checkDeath(actor, changes, options) {
+  if (!isResponsibleGM() || !actor || !setting("DeathReminders") || deathModuleActive()) return;
+  if (!foundry.utils.hasProperty(changes, `system.${hpPathFor(actor)}`)) return;
+  const hp = currentHp(actor);
+  if (hp === null) return;
+
+  const key = actor.uuid;
+  if (hp > 0) {
+    deathAlerted.delete(key);
+    return;
+  }
+  // Already at 0 before this update: not a new drop.
+  const prev = options?.[PREV_HP_KEY];
+  if (typeof prev === "number" && prev <= 0) return;
+  if (deathAlerted.has(key)) return;
+  if (setting("IgnorePlayerOwned") && actor.hasPlayerOwner) return;
+
+  const triggers = findReminders(actor).filter(r => r.kind === "death");
+  if (!triggers.length) return;
+  deathAlerted.add(key);
+  postDeathCard(actor, triggers);
+}
+
+/**
+ * Post the death trigger card for an actor (API: ignores HP and the other checks).
+ * @param {Actor} actor
+ * @param {object[]|Item[]} [options]  findReminders() results or items; default: the actor's death triggers
+ */
+async function deathAlert(actor, options) {
+  if (!game.user.isGM || !actor) return null;
+  options ??= findReminders(actor).filter(r => r.kind === "death");
+  const list = options.map(o => (o instanceof Item ? { item: o, kind: "death", cost: 1, entry: kindOf(o).entry ?? null } : o));
+  return postDeathCard(actor, list);
+}
+
+async function postDeathCard(actor, options) {
+  if (!options?.length) return null;
+  const content = `
+    <div class="dxrm-card dxrm-death">
+      <h3 class="dxrm-title"><i class="fa-solid fa-skull"></i> ${t("Chat.DeathTitle")}</h3>
+      <div class="dxrm-group" data-actor-uuid="${escapeHTML(actor.uuid)}">
+        <div class="dxrm-header">
+          <img src="${escapeHTML(displayImg(actor))}" alt="">
+          <div class="dxrm-who">
+            <strong>${escapeHTML(displayName(actor))}</strong>
+          </div>
+        </div>
+        <p class="dxrm-text">${t("Chat.DeathText", { name: escapeHTML(displayName(actor)) })}</p>
+        ${options.map(o => renderOption(actor, { ...o, kind: "death" })).join("")}
+      </div>
+    </div>`;
+
+  return ChatMessage.implementation.create({
+    content,
+    speaker: { alias: t("Chat.Speaker") },
+    whisper: whisperTargets(),
+    flags: { [MODULE_ID]: { card: "death", actorUuids: [actor.uuid] } }
+  });
+}
+
+/* -------------------------------------------- */
 /*  Chat cards: sound, buttons, live labels     */
 /* -------------------------------------------- */
 
 Hooks.on("createChatMessage", message => {
-  if (!game.user.isGM || !message.getFlag(MODULE_ID, "card")) return;
-  const src = setting("Sound");
+  const card = game.user.isGM ? message.getFlag(MODULE_ID, "card") : null;
+  if (!card) return;
+  const src = setting(card === "death" ? "DeathSound" : "Sound");
   if (!src) return;
   foundry.audio.AudioHelper.play({ src, volume: setting("Volume"), autoplay: true, loop: false }, false);
 });
@@ -1309,7 +1580,7 @@ function refreshLabels(message, html) {
 
     for (const option of group.querySelectorAll(".dxrm-option")) {
       const kind = option.dataset.kind;
-      if (kind === "lair" || kind === "hit") continue;
+      if (kind === "lair" || PASSIVE_KINDS.includes(kind)) continue;
       const cost = Number(option.dataset.cost) || 1;
       const item = fromUuidSync(option.dataset.itemUuid);
       const used = kind === "villain" && villainUsed(combat, item);
