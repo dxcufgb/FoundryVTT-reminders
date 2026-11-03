@@ -4,7 +4,7 @@
       "ExportList": {
         "Name": "Export Reminder list",
         "Label": "Export Reminder list",
-        "Hint": "Downloads this world's Reminder list (legendary, villain and lair actions) as a JSON file. Add or remove actions by right-clicking an item (Items sidebar, compendiums, actor sheets)."
+        "Hint": "Downloads this world's Reminder list (legendary, villain and lair actions, when-hit traits and death triggers) as a JSON file. Add or remove entries by right-clicking an item (Items sidebar, compendiums, actor sheets)."
       },
       "ImportList": {
         "Name": "Import Reminder list",
@@ -35,6 +35,14 @@
         "Name": "When-hit reminders",
         "Hint": "In dnd5e, whisper the GM when an attack roll hits a creature that has a when-hit trait or reaction (Heated Body, Parry, Rust Metal...), with its effect. Most trigger on melee hits only. Needs the attacker to target the creature so the roll is checked against its AC."
       },
+      "DeathReminders": {
+        "Name": "Death trigger reminders",
+        "Hint": "Whisper the GM when a creature with a death-triggered feature (Undead Fortitude, Death Burst, Relentless Endurance...) drops to 0 HP, with a button to use it. Works in any system. Waits while the old Death Trigger Alerts module is still on."
+      },
+      "HpPath": {
+        "Name": "HP attribute path",
+        "Hint": "Path inside actor.system to the current HP value that the death trigger check watches, e.g. attributes.hp.value. Leave empty to use the game system's primary token bar attribute (dnd5e: attributes.hp.value)."
+      },
       "DetectByActivation": {
         "Name": "Also detect by activation type",
         "Hint": "In dnd5e, count every item whose activation is a legendary or lair action, even if its name isn't in the Reminder list."
@@ -62,16 +70,22 @@
       "Volume": {
         "Name": "Reminder volume",
         "Hint": "Volume of the reminder sound (0 - 1)."
+      },
+      "DeathSound": {
+        "Name": "Death trigger sound",
+        "Hint": "Sound played for the GM when a death trigger card is posted (the other cards use the reminder sound). Leave empty for no sound."
       }
     },
     "Kind": {
       "legendary": "Legendary action",
       "villain": "Villain action",
       "lair": "Lair action",
-      "hit": "When hit"
+      "hit": "When hit",
+      "death": "Death trigger"
     },
     "Context": {
       "Add": "Add to Reminder list",
+      "AddDeath": "Add to Reminder list as a death trigger",
       "Remove": "Remove from Reminder list"
     },
     "Import": {
@@ -114,7 +128,20 @@
       "HitText": "<strong>{name}</strong> was hit by {attacker}'s melee attack ({total} against AC {ac}).",
       "HitTextAny": "<strong>{name}</strong> was hit by {attacker}'s attack ({total} against AC {ac}).",
       "OnMeleeHit": "on a melee hit",
-      "OnHit": "on any hit"
+      "OnHit": "on any hit",
+      "DeathTitle": "Death trigger!",
+      "DeathText": "<strong>{name}</strong> dropped to 0 HP, remember the death trigger!",
+      "OnDeath": "at 0 HP"
+    },
+    "Trigger": {
+      "creature_dies_nearby": "when a creature dies nearby",
+      "you_kill": "when it kills a creature",
+      "marked_target_dies": "when its marked target dies",
+      "ally_or_enemy_zero_hp_nearby": "when an enemy drops to 0 HP nearby",
+      "self_would_drop_to_0": "instead of dropping to 0 HP",
+      "self_dies": "when it dies",
+      "companion_dies": "when its companion dies",
+      "death_save": "on a death saving throw"
     },
     "Notify": {
       "ItemMissing": "Reminders: the item could not be found (was the creature deleted?).",
@@ -128,7 +155,9 @@
       "Exported": "Reminders: exported {count} actions to {file}.",
       "Set": "Reminders: the reminder setting of {item} was changed.",
       "NoResistance": "Reminders: {name} has no legendary resistance left.",
-      "ResistanceUsed": "Reminders: {name} used a legendary resistance ({value}/{max} left)."
+      "ResistanceUsed": "Reminders: {name} used a legendary resistance ({value}/{max} left).",
+      "DeathMigrated": "Reminders: moved this world's Death Trigger list into the Reminder list ({added} of your own death triggers added, {removed} you had removed left out).",
+      "DeathModuleActive": "Reminders: Death Trigger Alerts is part of Reminders now. Its cards stay with the old module until you disable Dxcufgb's Death Trigger Alerts in Manage Modules; then Reminders posts them."
     },
     "Item": {
       "Title": "Reminder",
@@ -145,7 +174,7 @@
       "villain": "{kind}, from its name or the Reminder list.",
       "activation": "{kind}, from its activation type.",
       "list": "{kind}, it matches \"{detail}\" in the Reminder list.",
-      "none": "no reminder: it isn't a legendary, villain or lair action or a when-hit trait."
+      "none": "no reminder: it isn't a legendary, villain or lair action, a when-hit trait or a death trigger."
     },
     "Exclude": {
       "Title": "Exclude from reminders",
