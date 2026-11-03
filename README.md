@@ -37,7 +37,3 @@ The full guide is in the [wiki](https://github.com/dxcufgb/FoundryVTT-reminders/
 ## License
 
 [MIT](LICENSE). The action summaries are short paraphrases. Creature data from the System Reference Documents 5.1 and 5.2 is used under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (Wizards of the Coast).
-
-## Releasing
-
-For the maintainer: **Actions → Release module → Run workflow**, type the version (for example `1.2.3`) and run it. The module is checked and packaged first; only then is the release `v1.2.3` published with `module.json` and `module.zip`. CI and releases come from [dxcufgb/foundry-module-ci](https://github.com/dxcufgb/foundry-module-ci), the same for every module.
