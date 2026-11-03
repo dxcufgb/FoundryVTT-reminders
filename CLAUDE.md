@@ -30,7 +30,7 @@ and no npm dependencies.
 - Settings are all `world` scope. The list lives in the hidden `ReminderList` setting (`config: false`, type Object);
   `listCache` must be reset whenever it changes (`saveList` and the setting's `onChange` do this).
 - Strings go through `t()` (`DXRM.` prefix). Hook handlers catch and `console.error` their errors.
-- Update `README.md` when behaviour, settings or the API change.
+- Update the wiki (not `README.md`, which only has the install steps and links to the wiki) when behaviour, settings or the API change.
 
 ## Review focus
 - **One client posts**: turn and lair cards (`onTurnChange`) and the list setup and merge (`ensureList`) run only where
@@ -40,7 +40,7 @@ and no npm dependencies.
   the client that rolled or used, and are limited to GMs (`game.user.isGM`). New hooks that fire on every client must
   use `isResponsibleGM()`, or each GM posts a copy. `lairDone` (once per combat round) is in memory on that client.
 - **Who sees the cards**: `whisperTargets()` whispers every card to all GM users while `WhisperGM` is on (the
-  default). With it off the cards are public by design (README: only the GM can press the buttons): players then see
+  default). With it off the cards are public by design (the wiki says only the GM can press the buttons): players then see
   creature names, points and the effect summaries. Keep `WhisperGM` the only switch; never post a card or flag
   outside `whisperTargets()`. Buttons are disabled for non-GMs (`renderChatMessageHTML`, `refreshLabels`); the sound
   and live label refreshes run only on GM clients.
