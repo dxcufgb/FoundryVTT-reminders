@@ -22,6 +22,21 @@
  *     the system's primary token attribute, so this works in any system. This used to be the separate
  *     Death Trigger Alerts module (dxcufgbs-death-trigger): while that module is still on, these cards
  *     wait, and on the first start its world list is moved into the Reminder list once.
+ *     Death triggers of other creatures come along (setting "Death triggers of other creatures"): the
+ *     killer's (Great Weapon Master), the caster of a mark on it (Hunter's Mark), the companion's owner, and
+ *     creatures in range (Keeper of Souls).
+ *   - Mythic actions (dnd5e activation "mythic"): on the legendary card once the creature's mythic trait has
+ *     triggered in this combat (it came back from 0 HP, or the GM pressed "Mythic trait used" on its 0 HP card).
+ *   - Start / end of turn: one card with the creature's own turn traits (Regeneration, noting fire or acid
+ *     taken since its last turn; Berserk at low HP; the hydra's Multiple Heads at the end of its turn), its
+ *     recharge abilities (ready or not, with a roll button), and the auras of others it starts its turn in (Stench).
+ *   - Bloodied: a card when a creature drops to half HP or less and has a trait for that (list entries, or a
+ *     description such as "while Bloodied").
+ *   - Damage taken (dnd5e): Lightning Absorption, Split... when the damage types match, and Swallow when the
+ *     damage in one turn reaches the entry's threshold.
+ *   - Saving throws (dnd5e): Magic Resistance, Evasion... while the save's roll dialog is open.
+ *   - Spells (dnd5e): Counterspell when an opposing creature in range casts a spell.
+ *   Every kind has its own on/off setting.
  *
  * What counts as a reminder action:
  *   - dnd5e items whose activation is "legendary" or "lair" (setting "Also detect by activation type").
@@ -32,10 +47,11 @@
  *   - Items named "... Villain Action ..." and list entries of kind "villain".
  *   - List entries of kind "hit" (traits like Heated Body): matched by name, no activation needed; the
  *     entry's optional `activation` and `requires` (description text) tell same-named features apart.
- *   - List entries of kind "death": matched by name, no activation needed.
+ *   - List entries of kind "death", "turn", "aura", "bloodied", "damage", "save" and "spell": matched by name,
+ *     no activation needed (the optional `activation` / `requires` checks of "hit" entries apply too).
  *   - The item's own setting wins: sheet header button "Reminder" -> Automatic / Legendary / Villain /
- *     Lair / When hit / Death trigger / Never, or item.setFlag("dxcufgbs-reminders", "kind",
- *     "legendary" | "villain" | "lair" | "hit" | "death" | "none"). The old Death Trigger Alerts flag
+ *     Lair / Mythic / When hit / Death trigger / Turn / Aura / Bloodied / Damage / Save / Spell / Never,
+ *     or item.setFlag("dxcufgbs-reminders", "kind", <one of KINDS> | "none"). The old Death Trigger Alerts flag
  *     (flags["dxcufgbs-death-trigger"].trigger true / false) still counts when this one isn't set.
  *
  * API: game.modules.get("dxcufgbs-reminders").api (set on ready)
@@ -46,8 +62,11 @@
  *   .getList()                     -> this world's Reminder list | null
  *   .isListed(nameOrItem)          -> boolean
  *   .hpPathFor(actor)              -> the HP path inside actor.system that the death check watches
+ *   .mythicActive(actor, combat?)  -> boolean: its mythic trait triggered in that combat (default: its combat)
+ *   .rechargeInfo(item)            -> { min, ready } | null (dnd5e recharge)
  *   GM only (players get false / null / nothing):
  *   .remindNow(combat = game.combat) -> Promise<ChatMessage | null>, posts the legendary / villain card now
+ *   .markMythicActive(actor, combat?) -> Promise<boolean>, puts its mythic actions on the legendary card
  *   .deathAlert(actor, items?)     -> Promise<ChatMessage | null>, posts the death trigger card now
  *                                     (items: Item[] or findReminders() results; default: its death triggers)
  *   .addToList(itemOrName, kind?)  -> Promise<boolean>
@@ -65,9 +84,14 @@
 const MODULE_ID = "dxcufgbs-reminders";
 const LIST_KEY = "ReminderList";
 const DEFAULT_LIST_PATH = `modules/${MODULE_ID}/data/reminders.json`;
-const KINDS = ["legendary", "villain", "lair", "hit", "death"];
-/** Kinds that need no activation and only count through their own check (attack hit, 0 HP). */
-const PASSIVE_KINDS = ["hit", "death"];
+const KINDS = ["legendary", "villain", "lair", "mythic", "hit", "death", "turn", "aura", "bloodied", "damage", "save", "spell"];
+/**
+ * Kinds that need no activation and only count through their own check: an attack hit, 0 HP, the start or
+ * end of a turn, another creature starting its turn nearby, half HP, damage taken, a saving throw, a spell cast.
+ */
+const PASSIVE_KINDS = ["hit", "death", "turn", "aura", "bloodied", "damage", "save", "spell"];
+/** Kinds whose cards spend legendary points (live cost labels). */
+const POINT_KINDS = ["legendary", "villain", "mythic"];
 const VILLAIN_NAME = /villain\s+action/i;
 
 /** The old Death Trigger Alerts module, now part of this one (its list and item flags are read once). */
@@ -78,11 +102,25 @@ const DEATH_TRIGGERS = [
   "creature_dies_nearby", "you_kill", "marked_target_dies", "ally_or_enemy_zero_hp_nearby",
   "self_would_drop_to_0", "self_dies", "companion_dies", "death_save"
 ];
+/** Death triggers that belong to another creature than the one that dropped (the killer, a caster nearby...). */
+const OTHERS_DEATH_TRIGGERS = ["creature_dies_nearby", "you_kill", "marked_target_dies", "ally_or_enemy_zero_hp_nearby", "companion_dies"];
 
 /** Lair cards already posted, as "combatId:round". */
 const lairDone = new Set();
 /** Actors (by uuid) that already got a death card while at 0 HP. Cleared when their HP goes above 0. */
 const deathAlerted = new Set();
+/** Last attacker of each target (target uuid -> { uuid, at }), from dnd5e attack messages: the likely killer. */
+const lastAttacker = new Map();
+/** Damage taken per actor in the current combat turn (actor uuid -> { key, total }), for Swallow thresholds. */
+const turnDamage = new Map();
+/** Damage types an actor took since the start of its last turn (actor uuid -> Set), for Regeneration. */
+const damageSince = new Map();
+/** The last dnd5e damage calculation per actor (actor uuid -> { types, at }), read when the damage is applied. */
+const lastDamageTypes = new Map();
+/** Recent HP changes (actor uuid -> "prev:hp:time"), so updateActor and updateToken don't count one twice. */
+const lastHpChange = new Map();
+/** Recent save reminders (actor uuid + ability -> time): dnd5e may call more than one pre-roll hook. */
+const lastSaveCard = new Map();
 
 /* -------------------------------------------- */
 /*  Settings                                    */
@@ -152,6 +190,15 @@ Hooks.once("init", () => {
   reg("LairReminders", { type: Boolean, default: true });
   reg("HitReminders", { type: Boolean, default: true });
   reg("DeathReminders", { type: Boolean, default: true });
+  reg("DeathOthers", { type: Boolean, default: true });
+  reg("MythicReminders", { type: Boolean, default: true });
+  reg("TurnReminders", { type: Boolean, default: true });
+  reg("AuraReminders", { type: Boolean, default: true });
+  reg("RechargeReminders", { type: Boolean, default: true });
+  reg("BloodiedReminders", { type: Boolean, default: true });
+  reg("DamageReminders", { type: Boolean, default: true });
+  reg("SaveReminders", { type: Boolean, default: true });
+  reg("SpellReminders", { type: Boolean, default: true });
   reg("HpPath", { type: String, default: "" });
   reg("DetectByActivation", { type: Boolean, default: true });
   reg("MergeDefaultList", { type: Boolean, default: true });
@@ -173,7 +220,8 @@ Hooks.once("ready", async () => {
     mod.api = {
       findReminders, remindNow, legendaryPoints, legendaryResistance, kindOf, configureItem,
       getList, isListed, addToList, removeFromList, exportList, importList: importListFlow, resetList,
-      deathAlert, hpPathFor
+      deathAlert, hpPathFor, mythicActive: (actor, combat = combatOf(actor)) => mythicActive(combat, actor),
+      markMythicActive, rechargeInfo
     };
   }
   try {
@@ -628,19 +676,19 @@ function systemHasActivations(item) {
 }
 
 /**
- * The legendary / lair activation of an item and its cost, from dnd5e data.
- * @returns {{kind: "legendary"|"lair", cost: number|null}|null}
+ * The legendary / lair / mythic activation of an item and its cost, from dnd5e data.
+ * @returns {{kind: "legendary"|"lair"|"mythic", cost: number|null}|null}
  */
 function activationKind(item) {
   for (const act of activitiesOf(item)) {
     const type = act?.activation?.type;
-    if (type === "legendary" || type === "lair") {
+    if (type === "legendary" || type === "lair" || type === "mythic") {
       const cost = Number(act.activation.value);
       return { kind: type, cost: Number.isFinite(cost) && cost > 0 ? cost : null };
     }
   }
   const legacy = item?.system?.activation; // dnd5e 3.x
-  if (legacy?.type === "legendary" || legacy?.type === "lair") {
+  if (legacy?.type === "legendary" || legacy?.type === "lair" || legacy?.type === "mythic") {
     const cost = Number(legacy.cost);
     return { kind: legacy.type, cost: Number.isFinite(cost) && cost > 0 ? cost : null };
   }
@@ -688,7 +736,7 @@ function bestEntry(entries, actor) {
 /**
  * What kind of reminder action is this item, and why?
  * @returns {{kind: string|null, reason: string, entry?: object, cost?: number|null}}
- *   reason: "flag" | "never" | "villain" | "activation" | "list" | "none"
+ *   reason: "flag" | "never" | "villain" | "activation" | "list" | "text" | "none"
  */
 function kindOf(item) {
   const flag = item?.getFlag?.(MODULE_ID, "kind");
@@ -723,9 +771,17 @@ function kindOf(item) {
   }
 
   // Death triggers (Undead Fortitude, Death Burst) need no activation either; checked at 0 HP.
-  const deathEntries = entriesOf("death");
+  const deathEntries = entriesOf("death").filter(e => hitEntryApplies(e, item));
   if (deathEntries.length && !act && oldDeath !== false) {
     return { kind: "death", reason: "list", entry: bestEntry(deathEntries, item?.actor), cost: null };
+  }
+
+  // The other traits that need no activation (Regeneration, Stench, Lightning Absorption, Magic Resistance...).
+  if (!act) {
+    for (const kind of ["turn", "aura", "damage", "save", "spell", "bloodied"]) {
+      const found = entriesOf(kind).filter(e => hitEntryApplies(e, item));
+      if (found.length) return { kind, reason: "list", entry: bestEntry(found, item?.actor), cost: null };
+    }
   }
 
   if (act && setting("DetectByActivation")) {
@@ -741,7 +797,17 @@ function kindOf(item) {
     }
     return { kind: entry.kind ?? "legendary", reason: "list", entry, cost: entry.cost ?? null };
   }
+  // 2024 stat blocks: traits that change while the creature is Bloodied, found by their description.
+  if (!act && mentionsOwnBloodied(item)) return { kind: "bloodied", reason: "text", entry: null, cost: null };
   return { kind: null, reason: "none" };
+}
+
+/** "While Bloodied, the dragon...", "when it is first Bloodied": about the creature itself, not its target. */
+const OWN_BLOODIED = /\bwhile (?:it is |it's )?bloodied\b|\b(?:while|when|if|once|after) (?:it|the (?!target\b|creature\b)[a-z' -]{1,40}?) (?:is|becomes|first becomes|is first) bloodied\b|\bfirst (?:becomes|is) bloodied\b/;
+
+function mentionsOwnBloodied(item) {
+  const text = descriptionText(item);
+  return !!text && OWN_BLOODIED.test(text);
 }
 
 /** The old Death Trigger Alerts flag on an item (read without getFlag: that module may be disabled). */
@@ -795,6 +861,38 @@ Hooks.on("dnd5e.postUseActivity", activity => {
     console.error(`${MODULE_ID} | postUseActivity`, err);
   }
 });
+
+/* -------------------------------------------- */
+/*  Mythic actions: after the mythic trait      */
+/* -------------------------------------------- */
+
+const MYTHIC_FLAG = "mythicActive";
+const actorKey = actor => String(actor?.uuid ?? "").replace(/\./g, "_");
+
+/** Has this creature's mythic trait triggered in this combat (so its mythic actions are on the turn card)? */
+function mythicActive(combat, actor) {
+  if (!combat || !actor) return false;
+  return !!(combat.getFlag(MODULE_ID, MYTHIC_FLAG) ?? {})[actorKey(actor)];
+}
+
+async function markMythicActive(actor, combat = game.combat) {
+  if (!combat || !actor || !game.user.isGM || mythicActive(combat, actor)) return false;
+  await combat.setFlag(MODULE_ID, MYTHIC_FLAG, { [actorKey(actor)]: true });
+  return true;
+}
+
+/** The combat this actor fights in, or the active one. */
+function combatOf(actor) {
+  return game.combats?.find(c => c.started && c.combatants.some(cb => cb.actor?.uuid === actor?.uuid)) ?? game.combat ?? null;
+}
+
+/** Items that look like the creature's mythic trait (the one that brings its mythic actions). */
+function mythicTraitItems(actor) {
+  return (actor?.items?.contents ?? [...(actor?.items ?? [])]).filter(i => {
+    if (activationKind(i)?.kind === "mythic") return false;
+    return /mythic/i.test(i.name ?? "") || !!descriptionText(i)?.includes("mythic trait");
+  });
+}
 
 /* -------------------------------------------- */
 /*  Context menus: Add / Remove                 */
@@ -929,9 +1027,7 @@ async function configureItem(item) {
             ${opt("auto", t("Item.Auto"))}
             ${opt("legendary", t("Kind.legendary"))}
             ${opt("villain", t("Kind.villain"))}
-            ${opt("lair", t("Kind.lair"))}
-            ${opt("hit", t("Kind.hit"))}
-            ${opt("death", t("Kind.death"))}
+            ${KINDS.filter(k => k !== "legendary" && k !== "villain").map(k => opt(k, t(`Kind.${k}`))).join("")}
             ${opt("never", t("Item.Never"))}
           </select>
         </div>
@@ -1045,7 +1141,15 @@ function onTurnChange(combat, prior, current) {
 
   if (setting("LairReminders")) checkLair(combat, prior, current, priorCombatant, currentCombatant);
 
-  if (!setting("LegendaryReminders") && !setting("VillainReminders")) return;
+  if (setting("TurnReminders") || setting("AuraReminders") || setting("RechargeReminders")) {
+    try {
+      checkTurnTraits(combat, priorCombatant, currentCombatant);
+    } catch (err) {
+      console.error(`${MODULE_ID} | turn traits`, err);
+    }
+  }
+
+  if (!setting("LegendaryReminders") && !setting("VillainReminders") && !setting("MythicReminders")) return;
   if (!priorCombatant) return;
   if (setting("AfterPcOnly") && !isPcCombatant(priorCombatant)) return;
   postTurnCard(combat, priorCombatant);
@@ -1060,6 +1164,7 @@ function gatherTurnOptions(combat, priorCombatant = null) {
   const groups = [];
   const wantLegendary = setting("LegendaryReminders");
   const wantVillain = setting("VillainReminders");
+  const wantMythic = setting("MythicReminders");
 
   for (const combatant of eligibleCombatants(combat)) {
     if (priorCombatant && combatant.actor === priorCombatant.actor) continue;
@@ -1068,6 +1173,7 @@ function gatherTurnOptions(combat, priorCombatant = null) {
     const options = findReminders(actor).filter(r => {
       if (r.kind === "legendary") return wantLegendary;
       if (r.kind === "villain") return wantVillain && !villainUsed(combat, r.item);
+      if (r.kind === "mythic") return wantMythic && mythicActive(combat, actor);
       return false;
     });
     if (!options.length) continue;
@@ -1146,13 +1252,30 @@ function costText(option) {
     const trigger = option.entry?.trigger;
     return DEATH_TRIGGERS.includes(trigger) ? t(`Trigger.${trigger}`) : t("Chat.OnDeath");
   }
+  const e = option.entry ?? {};
+  switch (option.kind) {
+    case "turn": return t(e.phase === "end" ? "Chat.AtTurnEnd" : "Chat.AtTurnStart");
+    case "aura": return e.rangeFt ? t("Chat.AuraRange", { range: e.rangeFt }) : t("Chat.Aura");
+    case "bloodied": return t("Chat.WhileBloodied");
+    case "damage":
+      if (Number(e.threshold) > 0) return t("Chat.DamageThreshold", { threshold: e.threshold });
+      return Array.isArray(e.damageTypes) && e.damageTypes.length
+        ? t("Chat.DamageTypes", { types: e.damageTypes.map(damageLabel).join(", ") }) : t("Chat.OnDamage");
+    case "save":
+      return Array.isArray(e.abilities) && e.abilities.length
+        ? t("Chat.SaveAbilities", { abilities: e.abilities.map(abilityLabel).join(", ") }) : t("Chat.OnSave");
+    case "spell": return e.rangeFt ? t("Chat.SpellRange", { range: e.rangeFt }) : t("Chat.OnSpell");
+    case "mythic-trait": return t("Chat.MythicTrait");
+    case "recharge": return rechargeText(option.item);
+  }
   const base = t("Chat.Cost", { cost: option.cost });
   return option.kind === "villain" ? `${base} · ${t("Chat.OncePerCombat")}` : base;
 }
 
 function renderOption(actor, option) {
   const { item, kind, cost, entry } = option;
-  const effect = entry?.effect ? `<div class="dxrm-effect">${escapeHTML(entry.effect)}</div>` : "";
+  const effect = (entry?.effect ? `<div class="dxrm-effect">${escapeHTML(entry.effect)}</div>` : "")
+    + (option.note ? `<div class="dxrm-note">${escapeHTML(option.note)}</div>` : "");
   return `
     <div class="dxrm-option dxrm-${kind}" data-item-uuid="${escapeHTML(item.uuid)}" data-kind="${kind}" data-cost="${cost}">
       <div class="dxrm-row">
@@ -1161,6 +1284,8 @@ function renderOption(actor, option) {
           <span class="dxrm-name">${escapeHTML(item.name)}</span>
           <span class="dxrm-label" data-label>${costText(option)}</span>
         </button>
+        ${kind === "recharge" ? `<button type="button" class="dxrm-recharge" data-item-uuid="${escapeHTML(item.uuid)}"
+                data-tooltip="${escapeHTML(t("Chat.RollRecharge"))}"><i class="fa-solid fa-dice-six"></i></button>` : ""}
         <button type="button" class="dxrm-open" data-item-uuid="${escapeHTML(item.uuid)}"
                 data-tooltip="${escapeHTML(t("Chat.Open"))}"><i class="fa-solid fa-book-open"></i></button>
         <button type="button" class="dxrm-exclude" data-item-uuid="${escapeHTML(item.uuid)}"
@@ -1372,11 +1497,15 @@ Hooks.on("createChatMessage", message => {
 });
 
 function onAttackMessage(message) {
-  if (!isResponsibleGM() || !setting("HitReminders")) return;
+  if (!isResponsibleGM()) return;
   const flags = message.flags?.dnd5e;
   if (flags?.roll?.type !== "attack") return;
   const targets = Array.isArray(flags.targets) ? flags.targets : [];
   if (!targets.length) return;
+  // Remember the attacker of each target: the likely killer for "when it kills a creature" death triggers.
+  const attacker = ChatMessage.implementation.getSpeakerActor?.(message.speaker);
+  if (attacker?.uuid) for (const target of targets) if (target?.uuid) lastAttacker.set(target.uuid, { uuid: attacker.uuid, at: Date.now() });
+  if (!setting("HitReminders")) return;
   const roll = message.rolls?.[0];
   if (!roll || !Number.isFinite(roll.total)) return;
   const melee = isMeleeAttack(message, roll) === true;
@@ -1442,7 +1571,226 @@ async function useResistance(actor) {
 }
 
 /* -------------------------------------------- */
-/*  Death triggers (0 HP)                       */
+/*  Helpers: tokens, distance, generic cards    */
+/* -------------------------------------------- */
+
+/** The actor's token on the canvas, or null. */
+function tokenOf(actor) {
+  const placeable = actor?.token?.object ?? actor?.getActiveTokens?.()[0] ?? null;
+  return placeable?.document ? placeable : null;
+}
+
+/**
+ * Distance in grid units (feet) between two actors' tokens, roughly edge to edge, or null when it can't be
+ * measured (no canvas, a token missing or on another scene).
+ */
+function distanceBetween(a, b) {
+  try {
+    if (typeof canvas === "undefined" || !canvas?.ready || !canvas.grid) return null;
+    const ta = tokenOf(a);
+    const tb = tokenOf(b);
+    if (!ta || !tb || ta.document.parent !== canvas.scene || tb.document.parent !== canvas.scene) return null;
+    const d = canvas.grid.measurePath([ta.center, tb.center]).distance;
+    const size = tok => Math.max(Number(tok.document.width) || 1, Number(tok.document.height) || 1);
+    const edge = ((size(ta) - 1) + (size(tb) - 1)) * (Number(canvas.grid.distance) || 5) / 2;
+    return Number.isFinite(d) ? Math.max(0, d - edge) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Within range? Without a range, or when it can't be measured, yes (one reminder too many beats a missed one). */
+function withinRange(a, b, range) {
+  const r = Number(range);
+  if (!Number.isFinite(r) || r <= 0) return true;
+  const d = distanceBetween(a, b);
+  return d === null || d <= r;
+}
+
+/** On different sides: one has a player owner and the other doesn't. */
+const opposed = (a, b) => !!a?.hasPlayerOwner !== !!b?.hasPlayerOwner;
+
+/** Other living actors around: the combatants of the actor's combat and the tokens on the canvas. */
+function otherActors(actor) {
+  const seen = new Map();
+  const add = other => {
+    if (!other?.uuid || other.uuid === actor?.uuid || seen.has(other.uuid)) return;
+    if ((currentHp(other) ?? 1) <= 0) return;
+    seen.set(other.uuid, other);
+  };
+  for (const c of combatOf(actor)?.combatants ?? []) if (!c.isDefeated) add(c.actor);
+  if (typeof canvas !== "undefined" && canvas?.ready) for (const tok of canvas.tokens?.placeables ?? []) add(tok.actor);
+  return [...seen.values()];
+}
+
+const damageLabel = type => globalThis.CONFIG?.DND5E?.damageTypes?.[type]?.label ?? String(type ?? "");
+const abilityLabel = key => globalThis.CONFIG?.DND5E?.abilities?.[key]?.label ?? String(key ?? "").toUpperCase();
+
+/**
+ * Post a card with one group per actor.
+ * @param {string} card   flag and CSS name ("turn-traits", "bloodied", ...)
+ * @param {object[]} groups  [{ actor, text?, options, extra? }]; text and extra are HTML the caller escaped
+ */
+async function postGroupsCard(card, icon, title, groups, flags = {}) {
+  if (!groups.length) return null;
+  const content = `
+    <div class="dxrm-card dxrm-${card}">
+      <h3 class="dxrm-title"><i class="fa-solid ${icon}"></i> ${title}</h3>
+      ${groups.map(g => `
+        <div class="dxrm-group" data-actor-uuid="${escapeHTML(g.actor.uuid)}">
+          <div class="dxrm-header">
+            <img src="${escapeHTML(displayImg(g.actor))}" alt="">
+            <div class="dxrm-who"><strong>${escapeHTML(displayName(g.actor))}</strong></div>
+          </div>
+          ${g.text ? `<p class="dxrm-text">${g.text}</p>` : ""}
+          ${g.options.map(o => renderOption(g.actor, o)).join("")}
+          ${g.extra ?? ""}
+        </div>`).join("")}
+    </div>`;
+
+  return ChatMessage.implementation.create({
+    content,
+    speaker: { alias: t("Chat.Speaker") },
+    whisper: whisperTargets(),
+    flags: { [MODULE_ID]: { card, actorUuids: groups.map(g => g.actor.uuid), ...flags } }
+  });
+}
+
+/* -------------------------------------------- */
+/*  Start / end of turn: traits, recharge, auras */
+/* -------------------------------------------- */
+
+/** Can this combatant's own traits remind (alive, and not a player's creature when those are skipped)? */
+function ownTurnEligible(combatant) {
+  const actor = combatant?.actor;
+  if (!actor || combatant.isDefeated) return false;
+  return !(setting("IgnorePlayerOwned") && actor.hasPlayerOwner);
+}
+
+/** Damage types taken since the start (or end) of the creature's last turn, recorded when dnd5e applied them. */
+function takenSince(actor, phase) {
+  return damageSince.get(actor?.uuid)?.[phase] ?? new Set();
+}
+
+/** Turn trait option with its note: Regeneration stopped by fire, Berserk at low HP. */
+function turnTraitOption(actor, option, phase) {
+  const entry = option.entry ?? {};
+  const stop = Array.isArray(entry.stopTypes) ? entry.stopTypes : [];
+  const taken = takenSince(actor, phase);
+  const stopped = stop.filter(type => taken.has(type));
+  let note = "";
+  if (stopped.length) note = t("Chat.TraitStopped", { types: stopped.map(damageLabel).join(", ") });
+  else if (Number(entry.hpAtMost) > 0) note = t("Chat.TraitLowHp", { hp: currentHp(actor) ?? "?", max: entry.hpAtMost });
+  return { ...option, note };
+}
+
+/** Berserk-style traits only apply at or below their HP. */
+function hpConditionMet(actor, entry) {
+  const limit = Number(entry?.hpAtMost);
+  if (!Number.isFinite(limit) || limit <= 0) return true;
+  const hp = currentHp(actor);
+  return hp === null || hp <= limit;
+}
+
+/** dnd5e recharge of an item: { min, ready } or null. 4.x+: uses.recovery "recharge"; 3.x: system.recharge. */
+function rechargeInfo(item) {
+  const uses = item?.system?.uses;
+  const recovery = Array.isArray(uses?.recovery) ? uses.recovery : [];
+  const rec = recovery.find(r => r?.period === "recharge");
+  if (rec) return { min: Number(rec.formula) || 6, ready: Number(uses.value) > 0 };
+  const old = item?.system?.recharge;
+  if (old && Number(old.value) > 0) return { min: Number(old.value), ready: !!old.charged };
+  return null;
+}
+
+function rechargeText(item) {
+  const info = rechargeInfo(item);
+  if (!info) return "";
+  const range = info.min >= 6 ? "6" : `${info.min}–6`;
+  return t(info.ready ? "Chat.RechargeReady" : "Chat.RechargeSpent", { range });
+}
+
+function refreshRecharge(option) {
+  const item = fromUuidSync(option.dataset.itemUuid);
+  const info = rechargeInfo(item);
+  const label = option.querySelector("[data-label]");
+  if (label && item) label.textContent = rechargeText(item);
+  option.classList.toggle("dxrm-spent", !!info && !info.ready);
+  const roll = option.querySelector("button.dxrm-recharge");
+  if (roll) roll.disabled = !game.user.isGM || !info || info.ready;
+}
+
+/** Roll an item's recharge through the system (dnd5e 4.x+ uses, or the 3.x item method). */
+async function rollRecharge(item) {
+  if (!game.user.isGM || !item) return null;
+  if (typeof item.rollRecharge === "function") return item.rollRecharge();
+  if (typeof item.system?.uses?.rollRecharge === "function") return item.system.uses.rollRecharge();
+  ui.notifications.warn(t("Notify.NoRecharge", { item: item.name }));
+  return null;
+}
+
+function rechargeOptions(actor) {
+  return [...(actor?.items ?? [])]
+    .filter(item => rechargeInfo(item))
+    .map(item => ({ item, kind: "recharge", cost: 1, entry: null }));
+}
+
+/** Auras of other creatures that the current creature starts its turn in (Stench). Needs measured distances. */
+function auraOptions(actor) {
+  const out = [];
+  const ignorePlayers = setting("IgnorePlayerOwned");
+  for (const other of otherActors(actor)) {
+    if (ignorePlayers && other.hasPlayerOwner) continue;
+    const d = distanceBetween(actor, other);
+    if (d === null) continue;
+    for (const option of findReminders(other).filter(r => r.kind === "aura")) {
+      const range = Number(option.entry?.rangeFt) || 5;
+      if (d <= range) out.push({ ...option, note: t("Chat.AuraFrom", { name: displayName(other) }) });
+    }
+  }
+  return out;
+}
+
+/** One card per turn change: the end of the last creature's turn and the start of the next one's. */
+function checkTurnTraits(combat, priorCombatant, currentCombatant) {
+  const groups = [];
+  const wantTurn = setting("TurnReminders");
+
+  if (wantTurn && priorCombatant && priorCombatant !== currentCombatant && ownTurnEligible(priorCombatant)) {
+    const actor = priorCombatant.actor;
+    const options = findReminders(actor)
+      .filter(r => r.kind === "turn" && r.entry?.phase === "end" && hpConditionMet(actor, r.entry))
+      .map(o => turnTraitOption(actor, o, "end"));
+    if (options.length) groups.push({ actor, text: t("Chat.TurnEndText", { name: escapeHTML(displayName(actor)) }), options });
+    damageSince.get(actor.uuid)?.end.clear();
+  }
+
+  const actor = currentCombatant?.actor;
+  if (actor && !currentCombatant.isDefeated) {
+    const own = ownTurnEligible(currentCombatant);
+    const options = [];
+    if (own && wantTurn) {
+      options.push(...findReminders(actor)
+        .filter(r => r.kind === "turn" && r.entry?.phase !== "end" && hpConditionMet(actor, r.entry))
+        .map(o => turnTraitOption(actor, o, "start")));
+    }
+    if (own && setting("RechargeReminders")) options.push(...rechargeOptions(actor));
+    if (setting("AuraReminders")) options.push(...auraOptions(actor));
+    if (options.length) groups.push({ actor, text: t("Chat.TurnStartText", { name: escapeHTML(displayName(actor)) }), options });
+    damageSince.get(actor.uuid)?.start.clear();
+  }
+
+  if (groups.length) postTurnTraitsCard(combat, groups);
+}
+
+async function postTurnTraitsCard(combat, groups) {
+  await deletePrevious(combat, "turn-traits");
+  return postGroupsCard("turn-traits", "fa-hourglass-half", t("Chat.TurnTraitsTitle"), groups,
+    { combatId: combat.id, round: combat.round });
+}
+
+/* -------------------------------------------- */
+/*  HP changes: death, bloodied, damage, mythic  */
 /* -------------------------------------------- */
 
 /**
@@ -1463,6 +1811,14 @@ function currentHp(actor) {
   return Number.isFinite(v) ? v : null;
 }
 
+/** Maximum HP next to the watched value (attributes.hp.value -> attributes.hp.max), or null. */
+function maxHp(actor) {
+  const path = hpPathFor(actor);
+  if (!path.endsWith(".value")) return null;
+  const v = Number(getProp(actor?.system ?? {}, path.replace(/\.value$/, ".max")));
+  return Number.isFinite(v) && v > 0 ? v : null;
+}
+
 // Remember the HP before the update (on the client that makes it); it travels with the update options.
 Hooks.on("preUpdateActor", (actor, changes, options) => {
   try {
@@ -1476,7 +1832,7 @@ Hooks.on("preUpdateActor", (actor, changes, options) => {
 // Fires on every client: only the active GM posts.
 Hooks.on("updateActor", (actor, changes, options) => {
   try {
-    checkDeath(actor, changes, options);
+    onHpChange(actor, changes, options);
   } catch (err) {
     console.error(`${MODULE_ID} | updateActor`, err);
   }
@@ -1488,70 +1844,337 @@ Hooks.on("updateToken", (tokenDoc, changes, options) => {
     if (tokenDoc.actorLink || !changes.delta?.system || !tokenDoc.actor) return;
     const system = { system: changes.delta.system };
     if (!foundry.utils.hasProperty(system, `system.${hpPathFor(tokenDoc.actor)}`)) return;
-    checkDeath(tokenDoc.actor, system, options);
+    onHpChange(tokenDoc.actor, system, options);
   } catch (err) {
     console.error(`${MODULE_ID} | updateToken`, err);
   }
 });
 
-function checkDeath(actor, changes, options) {
-  if (!isResponsibleGM() || !actor || !setting("DeathReminders") || deathModuleActive()) return;
+function onHpChange(actor, changes, options) {
+  if (!isResponsibleGM() || !actor) return;
   if (!foundry.utils.hasProperty(changes, `system.${hpPathFor(actor)}`)) return;
   const hp = currentHp(actor);
   if (hp === null) return;
+  const prev = typeof options?.[PREV_HP_KEY] === "number" ? options[PREV_HP_KEY] : null;
 
+  // updateActor and updateToken can both report the same change of an unlinked token.
+  const stamp = `${prev}:${hp}`;
+  const last = lastHpChange.get(actor.uuid);
+  if (last?.stamp === stamp && Date.now() - last.at < 1000) return;
+  lastHpChange.set(actor.uuid, { stamp, at: Date.now() });
+
+  if (prev !== null && hp < prev) trackTurnDamage(actor, prev - hp);
+  if (prev !== null && prev <= 0 && hp > 0) onRevived(actor);
+  if (prev !== null) checkBloodied(actor, prev, hp);
+  checkDeath(actor, hp, prev);
+}
+
+/* Death triggers ------------------------------- */
+
+function checkDeath(actor, hp, prev) {
   const key = actor.uuid;
   if (hp > 0) {
     deathAlerted.delete(key);
     return;
   }
   // Already at 0 before this update: not a new drop.
-  const prev = options?.[PREV_HP_KEY];
-  if (typeof prev === "number" && prev <= 0) return;
+  if (prev !== null && prev <= 0) return;
   if (deathAlerted.has(key)) return;
-  if (setting("IgnorePlayerOwned") && actor.hasPlayerOwner) return;
 
-  const triggers = findReminders(actor).filter(r => r.kind === "death");
-  if (!triggers.length) return;
+  const skipOwn = setting("IgnorePlayerOwned") && actor.hasPlayerOwner;
+  const deathOn = setting("DeathReminders") && !deathModuleActive();
+  const own = deathOn && !skipOwn
+    ? findReminders(actor).filter(r => r.kind === "death" && !OTHERS_DEATH_TRIGGERS.includes(r.entry?.trigger))
+    : [];
+  const others = deathOn && setting("DeathOthers") ? deathOthers(actor) : [];
+  const mythic = !skipOwn && setting("MythicReminders") ? mythicAtZero(actor) : null;
+  if (!own.length && !others.length && !mythic) return;
+
   deathAlerted.add(key);
-  postDeathCard(actor, triggers);
+  postDeathCard(actor, own, others, mythic);
+}
+
+/** Effects on the dying creature that a caster put there (Hunter's Mark, Hex): is `other` that caster? */
+function markedBy(effects, other, option) {
+  const names = [option.item?.name, option.entry?.name].filter(Boolean).map(n => withoutParens(normalizeName(n)));
+  return effects.some(effect => {
+    const name = withoutParens(normalizeName(effect?.name));
+    const sameName = !!name && names.some(n => n && (name === n || name.includes(n)));
+    let origin = null;
+    try {
+      origin = effect?.origin ? fromUuidSync(effect.origin, { strict: false }) : null;
+    } catch {
+      origin = null;
+    }
+    const originActor = origin instanceof Actor ? origin : origin?.actor ?? origin?.item?.actor ?? null;
+    if (originActor) return originActor.uuid === other.uuid && (sameName || origin === option.item || origin?.item === option.item);
+    return sameName;
+  });
+}
+
+/** Is `companion` a creature of the player who owns the character `owner` (a familiar, steed, steel defender)? */
+function isCompanionOf(companion, owner) {
+  if (owner?.type !== "character" || companion?.type === "character") return false;
+  const owners = a => Object.entries(a?.ownership ?? {})
+    .filter(([id, level]) => id !== "default" && level >= 3 && !game.users.get(id)?.isGM)
+    .map(([id]) => id);
+  const ownerIds = new Set(owners(owner));
+  return owners(companion).some(id => ownerIds.has(id));
+}
+
+/**
+ * Death triggers of other creatures: the killer (last attacker or the creature whose turn it is), the caster
+ * whose mark is on the creature, the companion's owner, and creatures in range.
+ * @returns {{actor: Actor, options: object[]}[]}
+ */
+function deathOthers(actor) {
+  const killers = new Set();
+  const attacker = lastAttacker.get(actor.uuid);
+  if (attacker && Date.now() - attacker.at < 120000) killers.add(attacker.uuid);
+  const current = combatOf(actor)?.combatant?.actor;
+  if (current) killers.add(current.uuid);
+  const effects = [...(actor.appliedEffects ?? actor.effects ?? [])];
+
+  const groups = [];
+  for (const other of otherActors(actor)) {
+    const options = findReminders(other).filter(r => {
+      if (r.kind !== "death") return false;
+      const trigger = r.entry?.trigger;
+      if (!OTHERS_DEATH_TRIGGERS.includes(trigger)) return false;
+      if (trigger === "you_kill") return killers.has(other.uuid) && opposed(actor, other);
+      if (trigger === "marked_target_dies") return markedBy(effects, other, r);
+      if (trigger === "companion_dies") return isCompanionOf(actor, other);
+      return opposed(actor, other) && withinRange(actor, other, r.entry?.rangeFt);
+    });
+    if (options.length) groups.push({ actor: other, options });
+  }
+  return groups;
+}
+
+/** A creature with mythic actions whose mythic trait hasn't triggered yet: its trait may trigger now. */
+function mythicAtZero(actor) {
+  if (!findReminders(actor).some(r => r.kind === "mythic")) return null;
+  const combat = combatOf(actor);
+  if (mythicActive(combat, actor)) return null;
+  return { traits: mythicTraitItems(actor).map(item => ({ item, kind: "mythic-trait", cost: 1, entry: null })) };
+}
+
+/** Back above 0 HP with mythic actions: that was its mythic trait, so its mythic actions are available now. */
+function onRevived(actor) {
+  if (!setting("MythicReminders") || !findReminders(actor).some(r => r.kind === "mythic")) return;
+  const combat = combatOf(actor);
+  if (!combat?.started || mythicActive(combat, actor)) return;
+  markMythicActive(actor, combat).then(done => {
+    if (done) ui.notifications.info(t("Notify.MythicActive", { name: displayName(actor) }));
+  });
 }
 
 /**
  * Post the death trigger card for an actor (API: ignores HP and the other checks).
  * @param {Actor} actor
- * @param {object[]|Item[]} [options]  findReminders() results or items; default: the actor's death triggers
+ * @param {object[]|Item[]} [options]  findReminders() results or items; default: the actor's own death triggers
  */
 async function deathAlert(actor, options) {
   if (!game.user.isGM || !actor) return null;
-  options ??= findReminders(actor).filter(r => r.kind === "death");
+  options ??= findReminders(actor).filter(r => r.kind === "death" && !OTHERS_DEATH_TRIGGERS.includes(r.entry?.trigger));
   const list = options.map(o => (o instanceof Item ? { item: o, kind: "death", cost: 1, entry: kindOf(o).entry ?? null } : o));
-  return postDeathCard(actor, list);
+  return postDeathCard(actor, list, [], null);
 }
 
-async function postDeathCard(actor, options) {
-  if (!options?.length) return null;
-  const content = `
-    <div class="dxrm-card dxrm-death">
-      <h3 class="dxrm-title"><i class="fa-solid fa-skull"></i> ${t("Chat.DeathTitle")}</h3>
-      <div class="dxrm-group" data-actor-uuid="${escapeHTML(actor.uuid)}">
-        <div class="dxrm-header">
-          <img src="${escapeHTML(displayImg(actor))}" alt="">
-          <div class="dxrm-who">
-            <strong>${escapeHTML(displayName(actor))}</strong>
-          </div>
-        </div>
-        <p class="dxrm-text">${t("Chat.DeathText", { name: escapeHTML(displayName(actor)) })}</p>
-        ${options.map(o => renderOption(actor, { ...o, kind: "death" })).join("")}
-      </div>
-    </div>`;
+async function postDeathCard(actor, own, others = [], mythic = null) {
+  if (!own?.length && !others.length && !mythic) return null;
+  const name = escapeHTML(displayName(actor));
+  const groups = [];
+  if (own?.length || mythic) {
+    const mythicHtml = mythic ? `
+      <p class="dxrm-text">${t("Chat.MythicText", { name })}</p>
+      <div class="dxrm-row">
+        <button type="button" class="dxrm-mythic-on" data-actor-uuid="${escapeHTML(actor.uuid)}">
+          <i class="fa-solid fa-star"></i> <span>${t("Chat.MythicOn")}</span>
+        </button>
+      </div>` : "";
+    groups.push({
+      actor,
+      text: own?.length ? t("Chat.DeathText", { name }) : "",
+      options: [
+        ...(own ?? []).map(o => ({ ...o, kind: "death" })),
+        ...(mythic?.traits ?? []).filter(m => !(own ?? []).some(o => o.item === m.item))
+      ],
+      extra: mythicHtml
+    });
+  }
+  for (const group of others) {
+    groups.push({ actor: group.actor, text: t("Chat.DeathOthersText", { name }), options: group.options.map(o => ({ ...o, kind: "death" })) });
+  }
+  return postGroupsCard("death", "fa-skull", t(own?.length || others.length ? "Chat.DeathTitle" : "Chat.MythicTitle"), groups);
+}
 
-  return ChatMessage.implementation.create({
-    content,
-    speaker: { alias: t("Chat.Speaker") },
-    whisper: whisperTargets(),
-    flags: { [MODULE_ID]: { card: "death", actorUuids: [actor.uuid] } }
+/* Bloodied ------------------------------------- */
+
+function checkBloodied(actor, prev, hp) {
+  if (!setting("BloodiedReminders") || hp <= 0) return;
+  if (setting("IgnorePlayerOwned") && actor.hasPlayerOwner) return;
+  const max = maxHp(actor);
+  if (!max || !(prev > max / 2 && hp <= max / 2)) return;
+  const options = findReminders(actor).filter(r => r.kind === "bloodied");
+  if (!options.length) return;
+  postGroupsCard("bloodied", "fa-droplet", t("Chat.BloodiedTitle"),
+    [{ actor, text: t("Chat.BloodiedText", { name: escapeHTML(displayName(actor)), hp, max }), options }]);
+}
+
+/* Damage taken --------------------------------- */
+
+/** Damage in one combat turn crossing an entry's threshold (Swallow: 30 damage from a creature inside). */
+function trackTurnDamage(actor, amount) {
+  if (!setting("DamageReminders") || (setting("IgnorePlayerOwned") && actor.hasPlayerOwner)) return;
+  const combat = combatOf(actor);
+  if (!combat?.started) return;
+  const key = `${combat.id}:${combat.round}:${combat.turn}`;
+  const rec = turnDamage.get(actor.uuid);
+  const before = rec?.key === key ? rec.total : 0;
+  const total = before + amount;
+  turnDamage.set(actor.uuid, { key, total });
+
+  const options = findReminders(actor).filter(r => {
+    const limit = Number(r.entry?.threshold);
+    return r.kind === "damage" && limit > 0 && before < limit && total >= limit;
   });
+  if (!options.length) return;
+  postGroupsCard("damage", "fa-heart-crack", t("Chat.DamageTitle"),
+    [{ actor, text: t("Chat.DamageThresholdText", { name: escapeHTML(displayName(actor)), total }), options }]);
+}
+
+// dnd5e works out the damage (with its types) right before applying it; remember the types for applyDamage.
+// The damage preview in chat cards also calculates, so nothing is posted here.
+Hooks.on("dnd5e.calculateDamage", (actor, damages) => {
+  try {
+    if (!game.user.isGM || !actor?.uuid || !Array.isArray(damages)) return;
+    const types = [...new Set(damages.map(d => d?.type).filter(type => typeof type === "string" && type !== "healing" && type !== "temphp"))];
+    lastDamageTypes.set(actor.uuid, { types, at: Date.now() });
+  } catch (err) {
+    console.error(`${MODULE_ID} | calculateDamage`, err);
+  }
+});
+
+// Fires only on the client that applied the damage (usually the GM).
+Hooks.on("dnd5e.applyDamage", (actor, amount) => {
+  try {
+    onDamageApplied(actor, amount);
+  } catch (err) {
+    console.error(`${MODULE_ID} | applyDamage`, err);
+  }
+});
+
+function onDamageApplied(actor, amount) {
+  if (!game.user.isGM || !actor?.uuid) return;
+  const calc = lastDamageTypes.get(actor.uuid);
+  lastDamageTypes.delete(actor.uuid);
+  if (!calc || Date.now() - calc.at > 5000 || !calc.types.length || Number(amount) < 0) return;
+
+  const since = damageSince.get(actor.uuid) ?? { start: new Set(), end: new Set() };
+  for (const type of calc.types) {
+    since.start.add(type);
+    since.end.add(type);
+  }
+  damageSince.set(actor.uuid, since);
+
+  if (!setting("DamageReminders") || (setting("IgnorePlayerOwned") && actor.hasPlayerOwner)) return;
+  const options = findReminders(actor).filter(r => r.kind === "damage"
+    && Array.isArray(r.entry?.damageTypes) && r.entry.damageTypes.some(type => calc.types.includes(type)));
+  if (!options.length) return;
+  postGroupsCard("damage", "fa-heart-crack", t("Chat.DamageTitle"), [{
+    actor,
+    text: t("Chat.DamageTypesText", { name: escapeHTML(displayName(actor)), types: escapeHTML(calc.types.map(damageLabel).join(", ")) }),
+    options
+  }]);
+}
+
+/* -------------------------------------------- */
+/*  Saving throws: before the roll              */
+/* -------------------------------------------- */
+
+/** Traits that change a saving throw (Magic Resistance, Evasion): whisper them while the roll dialog is open. */
+function onSaveStart(actor, ability, config) {
+  if (!game.user.isGM || !setting("SaveReminders") || !(actor instanceof Actor)) return;
+  if (config?.isConcentration) return;
+  if (setting("IgnorePlayerOwned") && actor.hasPlayerOwner) return;
+  const key = `${actor.uuid}:${ability}`;
+  if (Date.now() - (lastSaveCard.get(key) ?? 0) < 1500) return;
+  const options = findReminders(actor).filter(r => {
+    const abilities = r.entry?.abilities;
+    return r.kind === "save" && (!Array.isArray(abilities) || !abilities.length || abilities.includes(ability));
+  });
+  if (!options.length) return;
+  lastSaveCard.set(key, Date.now());
+  postGroupsCard("save", "fa-shield", t("Chat.SaveTitle"),
+    [{ actor, text: t("Chat.SaveText", { name: escapeHTML(displayName(actor)), ability: escapeHTML(abilityLabel(ability)) }), options }]);
+}
+
+// dnd5e 4.x / 5.x (config.subject, config.ability) and 3.x (actor, config, ability). Never return false here.
+for (const hook of ["dnd5e.preRollSavingThrowV2", "dnd5e.preRollSavingThrow"]) {
+  Hooks.on(hook, config => {
+    try {
+      onSaveStart(config?.subject, config?.ability, config);
+    } catch (err) {
+      console.error(`${MODULE_ID} | ${hook}`, err);
+    }
+  });
+}
+Hooks.on("dnd5e.preRollAbilitySave", (actor, config, ability) => {
+  try {
+    onSaveStart(actor, ability, config);
+  } catch (err) {
+    console.error(`${MODULE_ID} | preRollAbilitySave`, err);
+  }
+});
+
+/* -------------------------------------------- */
+/*  Spells cast nearby (Counterspell)           */
+/* -------------------------------------------- */
+
+/** A dnd5e spell usage message: { caster, item } or null. 4.x+: messageType "usage"; 3.x: flags.dnd5e.use. */
+function spellCast(message) {
+  const f = message?.flags?.dnd5e;
+  if (!f || !(f.messageType === "usage" || f.use)) return null;
+  if ((f.item?.type ?? f.use?.type) !== "spell") return null;
+  const uuid = f.item?.uuid ?? f.use?.itemUuid;
+  let item = null;
+  try {
+    item = message.getAssociatedItem?.() ?? (uuid ? fromUuidSync(uuid, { strict: false }) : null);
+  } catch {
+    item = null;
+  }
+  const caster = item?.actor ?? ChatMessage.implementation.getSpeakerActor?.(message.speaker) ?? null;
+  return caster ? { caster, item } : null;
+}
+
+// Fires on every client: only the active GM posts.
+Hooks.on("createChatMessage", message => {
+  try {
+    onSpellMessage(message);
+  } catch (err) {
+    console.error(`${MODULE_ID} | spell message`, err);
+  }
+});
+
+function onSpellMessage(message) {
+  if (!isResponsibleGM() || !setting("SpellReminders")) return;
+  const cast = spellCast(message);
+  if (!cast) return;
+  const { caster, item } = cast;
+  const ignorePlayers = setting("IgnorePlayerOwned");
+  const groups = [];
+  for (const other of otherActors(caster)) {
+    if ((ignorePlayers && other.hasPlayerOwner) || !opposed(other, caster)) continue;
+    const options = findReminders(other).filter(r => r.kind === "spell" && r.item !== item && withinRange(other, caster, r.entry?.rangeFt));
+    if (!options.length) continue;
+    groups.push({
+      actor: other,
+      text: t("Chat.SpellText", { name: escapeHTML(displayName(other)), caster: escapeHTML(displayName(caster)), spell: escapeHTML(item?.name ?? "") }),
+      options
+    });
+  }
+  if (groups.length) postGroupsCard("spell", "fa-wand-sparkles", t("Chat.SpellTitle"), groups);
 }
 
 /* -------------------------------------------- */
@@ -1580,7 +2203,11 @@ function refreshLabels(message, html) {
 
     for (const option of group.querySelectorAll(".dxrm-option")) {
       const kind = option.dataset.kind;
-      if (kind === "lair" || PASSIVE_KINDS.includes(kind)) continue;
+      if (kind === "recharge") {
+        refreshRecharge(option);
+        continue;
+      }
+      if (!POINT_KINDS.includes(kind)) continue;
       const cost = Number(option.dataset.cost) || 1;
       const item = fromUuidSync(option.dataset.itemUuid);
       const used = kind === "villain" && villainUsed(combat, item);
@@ -1596,6 +2223,10 @@ function refreshLabels(message, html) {
       const use = option.querySelector("button.dxrm-use");
       if (use) use.disabled = !game.user.isGM || short || used;
     }
+  }
+  for (const btn of html.querySelectorAll("button.dxrm-mythic-on")) {
+    const actor = fromUuidSync(btn.dataset.actorUuid);
+    btn.disabled = !game.user.isGM || !actor || mythicActive(combatOf(actor), actor);
   }
   for (const btn of html.querySelectorAll("button.dxrm-resist-use")) {
     const actor = fromUuidSync(btn.dataset.actorUuid);
@@ -1643,6 +2274,47 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
       } finally {
         rerenderFor(message);
       }
+    });
+  });
+
+  html.querySelectorAll("button.dxrm-recharge").forEach(btn => {
+    if (!game.user.isGM) {
+      btn.disabled = true;
+      return;
+    }
+    btn.addEventListener("click", async event => {
+      event.preventDefault();
+      event.stopPropagation();
+      const item = await fromUuid(btn.dataset.itemUuid);
+      if (!item) {
+        ui.notifications.warn(t("Notify.ItemMissing"));
+        return;
+      }
+      btn.disabled = true;
+      try {
+        await rollRecharge(item);
+      } finally {
+        rerenderFor(message);
+      }
+    });
+  });
+
+  html.querySelectorAll("button.dxrm-mythic-on").forEach(btn => {
+    if (!game.user.isGM) {
+      btn.disabled = true;
+      return;
+    }
+    btn.addEventListener("click", async event => {
+      event.preventDefault();
+      event.stopPropagation();
+      const actor = await fromUuid(btn.dataset.actorUuid);
+      const combat = combatOf(actor);
+      if (!actor || !combat) {
+        ui.notifications.warn(t("Notify.NoCombat"));
+        return;
+      }
+      btn.disabled = true;
+      if (await markMythicActive(actor, combat)) ui.notifications.info(t("Notify.MythicActive", { name: displayName(actor) }));
     });
   });
 
@@ -1694,6 +2366,12 @@ Hooks.on("updateActor", (actor, changes) => {
 Hooks.on("updateToken", (tokenDoc, changes) => {
   if (!game.user.isGM || !changes.delta?.system?.resources || !tokenDoc.actor) return;
   refreshCardsFor(tokenDoc.actor.uuid);
+});
+
+// Recharge rolls and uses change items, not the actor.
+Hooks.on("updateItem", item => {
+  if (!game.user.isGM || !item?.actor) return;
+  if (rechargeInfo(item)) refreshCardsFor(item.actor.uuid);
 });
 
 Hooks.on("updateCombat", (combat, changes) => {

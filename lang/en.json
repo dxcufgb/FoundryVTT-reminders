@@ -4,7 +4,7 @@
       "ExportList": {
         "Name": "Export Reminder list",
         "Label": "Export Reminder list",
-        "Hint": "Downloads this world's Reminder list (legendary, villain and lair actions, when-hit traits and death triggers) as a JSON file. Add or remove entries by right-clicking an item (Items sidebar, compendiums, actor sheets)."
+        "Hint": "Downloads this world's Reminder list (every kind of reminder) as a JSON file. Add or remove entries by right-clicking an item (Items sidebar, compendiums, actor sheets)."
       },
       "ImportList": {
         "Name": "Import Reminder list",
@@ -38,6 +38,42 @@
       "DeathReminders": {
         "Name": "Death trigger reminders",
         "Hint": "Whisper the GM when a creature with a death-triggered feature (Undead Fortitude, Death Burst, Relentless Endurance...) drops to 0 HP, with a button to use it. Works in any system. Waits while the old Death Trigger Alerts module is still on."
+      },
+      "DeathOthers": {
+        "Name": "Death triggers of other creatures",
+        "Hint": "When a creature drops to 0 HP, also remind about other creatures' death triggers: the killer's (Great Weapon Master, Dark One's Blessing), the caster of a mark on it (Hunter's Mark, Hex), a companion's owner, and creatures in range (Keeper of Souls). These include player characters' features."
+      },
+      "MythicReminders": {
+        "Name": "Mythic action reminders",
+        "Hint": "When a creature with mythic actions drops to 0 HP, remind about its mythic trait. Once the trait has triggered (it comes back above 0 HP, or you press Mythic trait used), its mythic actions are added to the legendary action card for the rest of the combat."
+      },
+      "TurnReminders": {
+        "Name": "Start and end of turn traits",
+        "Hint": "At the start (or end) of a creature's turn, remind about its turn traits: Regeneration (noting acid, fire or radiant damage taken since its last turn), Berserk at low HP, the hydra's Multiple Heads."
+      },
+      "AuraReminders": {
+        "Name": "Aura reminders",
+        "Hint": "When a creature starts its turn within range of another creature's aura (Stench), remind about it. Needs both tokens on the current scene."
+      },
+      "RechargeReminders": {
+        "Name": "Recharge reminders",
+        "Hint": "In dnd5e, at the start of a creature's turn, list its recharge abilities (Breath Weapon) and whether they are ready, with a button to roll the recharge."
+      },
+      "BloodiedReminders": {
+        "Name": "Bloodied reminders",
+        "Hint": "When a creature drops to half its HP or less, remind about its traits for that: list entries, and features whose description says what changes while it is Bloodied (2024 stat blocks)."
+      },
+      "DamageReminders": {
+        "Name": "Damage reminders",
+        "Hint": "In dnd5e, when damage is applied, remind about traits that react to it: Lightning Absorption and Split by damage type, Swallow when the damage in one turn reaches its threshold."
+      },
+      "SaveReminders": {
+        "Name": "Saving throw reminders",
+        "Hint": "In dnd5e, when a creature is about to roll a saving throw, remind about traits that change it (Magic Resistance, Evasion, Turn Resistance), while the roll dialog is still open."
+      },
+      "SpellReminders": {
+        "Name": "Spell reaction reminders",
+        "Hint": "In dnd5e, when a creature casts a spell, remind about the reactions of opposing creatures in range (Counterspell)."
       },
       "HpPath": {
         "Name": "HP attribute path",
@@ -80,8 +116,15 @@
       "legendary": "Legendary action",
       "villain": "Villain action",
       "lair": "Lair action",
+      "mythic": "Mythic action",
       "hit": "When hit",
-      "death": "Death trigger"
+      "death": "Death trigger",
+      "turn": "Start / end of turn",
+      "aura": "Aura (others' turns)",
+      "bloodied": "While bloodied",
+      "damage": "When damaged",
+      "save": "On a saving throw",
+      "spell": "When a spell is cast nearby"
     },
     "Context": {
       "Add": "Add to Reminder list",
@@ -131,7 +174,42 @@
       "OnHit": "on any hit",
       "DeathTitle": "Death trigger!",
       "DeathText": "<strong>{name}</strong> dropped to 0 HP, remember the death trigger!",
-      "OnDeath": "at 0 HP"
+      "OnDeath": "at 0 HP",
+      "DeathOthersText": "<strong>{name}</strong> dropped to 0 HP: this creature has a death trigger for that.",
+      "MythicTitle": "Mythic trait?",
+      "MythicText": "<strong>{name}</strong> has mythic actions: its mythic trait may trigger now. Once it has, its mythic actions are added to the legendary action card.",
+      "MythicOn": "Mythic trait used",
+      "MythicTrait": "mythic trait",
+      "TurnTraitsTitle": "Turn traits",
+      "TurnStartText": "Start of <strong>{name}</strong>'s turn.",
+      "TurnEndText": "End of <strong>{name}</strong>'s turn.",
+      "AtTurnStart": "at the start of its turn",
+      "AtTurnEnd": "at the end of its turn",
+      "TraitStopped": "It took {types} damage since its last turn: this doesn't work now.",
+      "TraitLowHp": "It has {hp} HP ({max} or fewer).",
+      "Aura": "aura",
+      "AuraRange": "aura, {range} ft",
+      "AuraFrom": "From {name}'s aura.",
+      "RechargeReady": "Recharge {range}: ready",
+      "RechargeSpent": "Recharge {range}: spent",
+      "RollRecharge": "Roll the recharge",
+      "BloodiedTitle": "Bloodied",
+      "BloodiedText": "<strong>{name}</strong> is Bloodied ({hp}/{max} HP).",
+      "WhileBloodied": "while bloodied",
+      "DamageTitle": "Damage trait",
+      "DamageTypesText": "<strong>{name}</strong> took {types} damage.",
+      "DamageThresholdText": "<strong>{name}</strong> took {total} damage this turn.",
+      "DamageTypes": "on {types} damage",
+      "DamageThreshold": "{threshold}+ damage in one turn",
+      "OnDamage": "when damaged",
+      "SaveTitle": "Saving throw trait",
+      "SaveText": "<strong>{name}</strong> is about to make a {ability} saving throw.",
+      "SaveAbilities": "on {abilities} saves",
+      "OnSave": "on saving throws",
+      "SpellTitle": "Spell reaction?",
+      "SpellText": "{caster} cast <strong>{spell}</strong>: <strong>{name}</strong> could react.",
+      "SpellRange": "spell cast within {range} ft",
+      "OnSpell": "when a spell is cast"
     },
     "Trigger": {
       "creature_dies_nearby": "when a creature dies nearby",
@@ -157,7 +235,10 @@
       "NoResistance": "Reminders: {name} has no legendary resistance left.",
       "ResistanceUsed": "Reminders: {name} used a legendary resistance ({value}/{max} left).",
       "DeathMigrated": "Reminders: moved this world's Death Trigger list into the Reminder list ({added} of your own death triggers added, {removed} you had removed left out).",
-      "DeathModuleActive": "Reminders: Death Trigger Alerts is part of Reminders now. Its cards stay with the old module until you disable Dxcufgb's Death Trigger Alerts in Manage Modules; then Reminders posts them."
+      "DeathModuleActive": "Reminders: Death Trigger Alerts is part of Reminders now. Its cards stay with the old module until you disable Dxcufgb's Death Trigger Alerts in Manage Modules; then Reminders posts them.",
+      "MythicActive": "Reminders: {name}'s mythic trait has triggered; its mythic actions are on the legendary action card for this combat.",
+      "NoCombat": "Reminders: this creature isn't in a combat.",
+      "NoRecharge": "Reminders: {item} can't roll its recharge in this system version; roll it from the sheet."
     },
     "Item": {
       "Title": "Reminder",
@@ -174,7 +255,8 @@
       "villain": "{kind}, from its name or the Reminder list.",
       "activation": "{kind}, from its activation type.",
       "list": "{kind}, it matches \"{detail}\" in the Reminder list.",
-      "none": "no reminder: it isn't a legendary, villain or lair action, a when-hit trait or a death trigger."
+      "none": "no reminder: none of the reminder kinds (legendary, villain, lair, mythic, when hit, death, turn, aura, bloodied, damage, save, spell) applies.",
+      "text": "{kind}, from its description."
     },
     "Exclude": {
       "Title": "Exclude from reminders",

@@ -24,6 +24,23 @@
   color: #8b1a1a;
 }
 
+.dxrm-card.dxrm-turn-traits {
+  border-color: #4a4a6a;
+  background: rgba(74, 74, 106, 0.08);
+}
+
+.dxrm-card.dxrm-bloodied,
+.dxrm-card.dxrm-damage {
+  border-color: #9a2a2a;
+  background: rgba(154, 42, 42, 0.08);
+}
+
+.dxrm-card.dxrm-save,
+.dxrm-card.dxrm-spell {
+  border-color: #5a3a8a;
+  background: rgba(90, 58, 138, 0.08);
+}
+
 .dxrm-card.dxrm-resist {
   border-color: #2b4a7a;
   background: rgba(43, 74, 122, 0.08);
@@ -153,4 +170,18 @@
 .dxrm-exclude-dialog .form-footer,
 .dxrm-exclude-dialog footer {
   flex-wrap: wrap;
+}
+
+.dxrm-card .dxrm-note {
+  margin: 2px 0 0 4px;
+  font-size: 0.9em;
+  font-style: italic;
+}
+
+.dxrm-card button.dxrm-recharge {
+  flex: 0 0 32px;
+}
+
+.dxrm-card button.dxrm-mythic-on {
+  flex: 1;
 }

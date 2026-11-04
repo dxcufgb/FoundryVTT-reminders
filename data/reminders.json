@@ -1,11 +1,18 @@
 {
  "version": 1,
- "matching": "An item counts as a reminder when its name matches an entry's name (or alias) and, in systems that say so (dnd5e), its activation is a legendary or lair action. Entries of kind 'hit' (traits and reactions such as Heated Body or Parry) need no activation; their optional 'activation' (dnd5e activation type the item must have) and 'requires' (text its description must contain) tell them apart from same-named features of the other edition, and 'attack' is 'melee' (default) or 'any' (ranged hits too). A legendary or lair activation always wins over a 'hit' entry. match 'exact' ignores case, apostrophe style and text in parentheses; 'contains' matches anywhere in the item's name. Entries of kind 'death' (Undead Fortitude, Death Burst, Relentless Endurance...) also need no activation; they are checked when the creature drops to 0 HP, and a legendary or lair activation wins over them too.",
+ "matching": "An item counts as a reminder when its name matches an entry's name (or alias) and, in systems that say so (dnd5e), its activation is a legendary or lair action. Entries of kind 'hit' (traits and reactions such as Heated Body or Parry) need no activation; their optional 'activation' (dnd5e activation type the item must have) and 'requires' (text its description must contain) tell them apart from same-named features of the other edition, and 'attack' is 'melee' (default) or 'any' (ranged hits too). A legendary or lair activation always wins over a 'hit' entry. match 'exact' ignores case, apostrophe style and text in parentheses; 'contains' matches anywhere in the item's name. Entries of kind 'death' (Undead Fortitude, Death Burst, Relentless Endurance...) also need no activation; they are checked when the creature drops to 0 HP, and a legendary or lair activation wins over them too. The same goes for 'turn' (start or end of its own turn: 'phase', 'stopTypes' damage types that stop it, 'hpAtMost'), 'aura' (another creature starts its turn within 'rangeFt'), 'bloodied' (it drops to half HP or less; features whose description says what changes 'while Bloodied' count too), 'damage' ('damageTypes' it reacts to, or 'threshold' damage in one turn), 'save' ('abilities', empty for every save) and 'spell' (a creature within 'rangeFt' casts a spell). Mythic actions are found by their dnd5e activation ('mythic').",
  "kinds": {
   "legendary": "Legendary action: used right after another creature's turn, spending legendary action uses",
   "lair": "Lair action (2014): used on initiative count 20, losing ties",
   "hit": "When hit: a trait or reaction that triggers when the creature is hit by an attack, melee only unless 'attack' is 'any' (dnd5e attack rolls with a target)",
   "death": "Death trigger: a feature that matters when the creature drops to 0 HP or dies (checked on the creature that dropped)",
+  "mythic": "Mythic action: on the legendary action card once the creature's mythic trait has triggered in the combat (dnd5e activation 'mythic')",
+  "turn": "Turn trait: at the start (or, with phase 'end', the end) of the creature's own turn",
+  "aura": "Aura: when another creature starts its turn within rangeFt",
+  "bloodied": "Bloodied: when the creature drops to half its HP or less",
+  "damage": "Damage trait: damage of one of damageTypes, or threshold damage in one turn (dnd5e)",
+  "save": "Saving throw trait: before the creature rolls a save of one of abilities (dnd5e)",
+  "spell": "Spell reaction: when an opposing creature within rangeFt casts a spell (dnd5e)",
   "custom": "Added by the GM from an item's context menu"
  },
  "deathTriggers": {
@@ -3841,6 +3848,425 @@
    "effect": "When it dies, it explodes and showers creatures around it with shrapnel; see the creature's stat block.",
    "match": "contains",
    "deathListVersion": 2
+  },
+  {
+   "id": "turn-regeneration",
+   "name": "Regeneration",
+   "kind": "turn",
+   "cost": null,
+   "edition": "both",
+   "source": "Monster stat blocks",
+   "creatures": [],
+   "limit": null,
+   "effect": "Regains HP at the start of its turn; its stat block says how many and what stops it (fire, acid, radiant damage...).",
+   "match": "exact",
+   "phase": "start"
+  },
+  {
+   "id": "2014-turn-regeneration-troll",
+   "name": "Regeneration",
+   "kind": "turn",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Troll"
+   ],
+   "limit": null,
+   "effect": "Regains 10 HP at the start of its turn. If it took acid or fire damage, this doesn't work at the start of its next turn. It dies only if it starts its turn with 0 HP and doesn't regenerate.",
+   "match": "exact",
+   "phase": "start",
+   "stopTypes": [
+    "acid",
+    "fire"
+   ]
+  },
+  {
+   "id": "2014-turn-regeneration-vampire",
+   "name": "Regeneration",
+   "kind": "turn",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Vampire",
+    "Vampire Spawn"
+   ],
+   "limit": null,
+   "effect": "Regains 20 HP (spawn: 10) at the start of its turn if it has at least 1 HP and isn't in sunlight or running water. Radiant damage or holy water stops it at the start of its next turn.",
+   "match": "exact",
+   "phase": "start",
+   "stopTypes": [
+    "radiant"
+   ]
+  },
+  {
+   "id": "2014-turn-berserk-flesh-golem",
+   "name": "Berserk",
+   "kind": "turn",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Flesh Golem"
+   ],
+   "limit": null,
+   "effect": "Whenever it starts its turn with 40 HP or fewer, roll a d6. On a 6 it goes berserk: each turn it attacks the nearest creature it can see (or an object), until it is destroyed or regains all its HP. Its creator can try to calm it (DC 15 Persuasion within 60 ft).",
+   "match": "exact",
+   "phase": "start",
+   "hpAtMost": 40
+  },
+  {
+   "id": "2014-turn-berserk-clay-golem",
+   "name": "Berserk",
+   "kind": "turn",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Clay Golem"
+   ],
+   "limit": null,
+   "effect": "Whenever it starts its turn with 60 HP or fewer, roll a d6. On a 6 it goes berserk: each turn it attacks the nearest creature it can see (or an object), until it is destroyed or regains all its HP.",
+   "match": "exact",
+   "phase": "start",
+   "hpAtMost": 60
+  },
+  {
+   "id": "2014-turn-multiple-heads-hydra",
+   "name": "Multiple Heads",
+   "kind": "turn",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Hydra"
+   ],
+   "limit": null,
+   "effect": "At the end of its turn it grows two heads for each head that died since its last turn, unless it took fire damage since its last turn, and regains 10 HP per head regrown. A head dies when it takes 25 or more damage in a single turn.",
+   "match": "exact",
+   "phase": "end",
+   "stopTypes": [
+    "fire"
+   ]
+  },
+  {
+   "id": "aura-stench",
+   "name": "Stench",
+   "kind": "aura",
+   "cost": null,
+   "edition": "both",
+   "source": "Monster stat blocks",
+   "creatures": [],
+   "limit": null,
+   "effect": "A creature that starts its turn nearby makes a Con save or is poisoned until the start of its next turn; the DC and range are in the stat block.",
+   "match": "exact",
+   "rangeFt": 5
+  },
+  {
+   "id": "2014-aura-stench-ghast",
+   "name": "Stench",
+   "kind": "aura",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Ghast"
+   ],
+   "limit": null,
+   "effect": "A creature that starts its turn within 5 ft makes a DC 10 Con save or is poisoned until the start of its next turn. On a success it is immune to this ghast's Stench for 24 hours.",
+   "match": "exact",
+   "rangeFt": 5
+  },
+  {
+   "id": "2014-aura-stench-troglodyte",
+   "name": "Stench",
+   "kind": "aura",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Troglodyte"
+   ],
+   "limit": null,
+   "effect": "A creature other than a troglodyte that starts its turn within 5 ft makes a DC 12 Con save or is poisoned until the start of its next turn. On a success it is immune to the Stench of all troglodytes for 1 hour.",
+   "match": "exact",
+   "rangeFt": 5
+  },
+  {
+   "id": "2014-aura-stench-hezrou",
+   "name": "Stench",
+   "kind": "aura",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Hezrou"
+   ],
+   "limit": null,
+   "effect": "A creature that starts its turn within 10 ft makes a DC 14 Con save or is poisoned until the start of its next turn. On a success it is immune to the hezrou's Stench for 24 hours.",
+   "match": "exact",
+   "rangeFt": 10
+  },
+  {
+   "id": "2014-damage-lightning-absorption",
+   "name": "Lightning Absorption",
+   "kind": "damage",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Flesh Golem",
+    "Shambling Mound"
+   ],
+   "limit": null,
+   "effect": "Whenever it is subjected to lightning damage, it takes no damage and instead regains HP equal to the lightning damage dealt.",
+   "match": "exact",
+   "damageTypes": [
+    "lightning"
+   ]
+  },
+  {
+   "id": "2014-damage-fire-absorption",
+   "name": "Fire Absorption",
+   "kind": "damage",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Iron Golem"
+   ],
+   "limit": null,
+   "effect": "Whenever it is subjected to fire damage, it takes no damage and instead regains HP equal to the fire damage dealt.",
+   "match": "exact",
+   "damageTypes": [
+    "fire"
+   ]
+  },
+  {
+   "id": "2014-damage-acid-absorption",
+   "name": "Acid Absorption",
+   "kind": "damage",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Clay Golem"
+   ],
+   "limit": null,
+   "effect": "Whenever it is subjected to acid damage, it takes no damage and instead regains HP equal to the acid damage dealt.",
+   "match": "exact",
+   "damageTypes": [
+    "acid"
+   ]
+  },
+  {
+   "id": "2014-damage-split",
+   "name": "Split",
+   "kind": "damage",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Black Pudding",
+    "Ochre Jelly"
+   ],
+   "limit": null,
+   "effect": "When a Medium or larger one with at least 10 HP is subjected to lightning or slashing damage, it splits into two new ones, each with half its HP (rounded down) and one size smaller.",
+   "match": "exact",
+   "damageTypes": [
+    "lightning",
+    "slashing"
+   ]
+  },
+  {
+   "id": "damage-swallow",
+   "name": "Swallow",
+   "kind": "damage",
+   "cost": null,
+   "edition": "both",
+   "source": "Monster stat blocks",
+   "creatures": [],
+   "limit": null,
+   "effect": "If it takes enough damage on a single turn from a creature inside it (usually 30), it makes a Con save at the end of that turn or regurgitates everything it swallowed, who fall prone within 10 ft. The threshold and DC are in its stat block.",
+   "match": "exact",
+   "threshold": 30
+  },
+  {
+   "id": "2014-damage-swallow-behir",
+   "name": "Swallow",
+   "kind": "damage",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Behir"
+   ],
+   "limit": null,
+   "effect": "If it takes 30 or more damage on a single turn from a creature inside it, it makes a DC 14 Con save at the end of that turn or regurgitates all swallowed creatures, who fall prone within 10 ft.",
+   "match": "exact",
+   "threshold": 30
+  },
+  {
+   "id": "2014-damage-swallow-remorhaz",
+   "name": "Swallow",
+   "kind": "damage",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Remorhaz"
+   ],
+   "limit": null,
+   "effect": "If it takes 30 or more damage on a single turn from a creature inside it, it makes a DC 15 Con save at the end of that turn or regurgitates all swallowed creatures, who fall prone within 10 ft.",
+   "match": "exact",
+   "threshold": 30
+  },
+  {
+   "id": "2014-damage-swallow-tarrasque",
+   "name": "Swallow",
+   "kind": "damage",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Tarrasque"
+   ],
+   "limit": null,
+   "effect": "If it takes 60 or more damage on a single turn from a creature inside it, it makes a DC 20 Con save at the end of that turn or regurgitates all swallowed creatures, who fall prone within 10 ft.",
+   "match": "exact",
+   "threshold": 60
+  },
+  {
+   "id": "2014-damage-absorb-elements",
+   "name": "Absorb Elements",
+   "kind": "damage",
+   "cost": null,
+   "edition": "2014",
+   "source": "XGtE",
+   "creatures": [],
+   "limit": null,
+   "effect": "Reaction when it takes acid, cold, fire, lightning or thunder damage: resistance to that type until the start of its next turn, including against the damage just taken (give back half of it).",
+   "match": "exact",
+   "damageTypes": [
+    "acid",
+    "cold",
+    "fire",
+    "lightning",
+    "thunder"
+   ],
+   "activation": "reaction"
+  },
+  {
+   "id": "save-magic-resistance",
+   "name": "Magic Resistance",
+   "kind": "save",
+   "cost": null,
+   "edition": "both",
+   "source": "Monster stat blocks",
+   "creatures": [],
+   "limit": null,
+   "effect": "Advantage on saving throws against spells and other magical effects.",
+   "match": "exact",
+   "abilities": []
+  },
+  {
+   "id": "save-evasion",
+   "name": "Evasion",
+   "kind": "save",
+   "cost": null,
+   "edition": "both",
+   "source": "Monster stat blocks",
+   "creatures": [],
+   "limit": null,
+   "effect": "On a Dex save for half damage it takes no damage on a success and only half on a failure.",
+   "match": "exact",
+   "abilities": [
+    "dex"
+   ]
+  },
+  {
+   "id": "save-turn-resistance",
+   "name": "Turn Resistance",
+   "kind": "save",
+   "cost": null,
+   "edition": "both",
+   "source": "Monster stat blocks",
+   "creatures": [],
+   "limit": null,
+   "effect": "Advantage on saving throws against effects that turn undead.",
+   "match": "exact",
+   "abilities": [
+    "wis"
+   ]
+  },
+  {
+   "id": "2014-save-turning-defiance",
+   "name": "Turning Defiance",
+   "kind": "save",
+   "cost": null,
+   "edition": "2014",
+   "source": "MM 2014 / SRD 5.1",
+   "creatures": [
+    "Ghast"
+   ],
+   "limit": null,
+   "effect": "It and any ghouls within 30 ft have advantage on saving throws against effects that turn undead.",
+   "match": "exact",
+   "abilities": [
+    "wis"
+   ],
+   "aliases": [
+    "Turn Defiance"
+   ]
+  },
+  {
+   "id": "save-gnome-cunning",
+   "name": "Gnome Cunning",
+   "kind": "save",
+   "cost": null,
+   "edition": "both",
+   "source": "Monster stat blocks",
+   "creatures": [],
+   "limit": null,
+   "effect": "Advantage on Int, Wis and Cha saving throws against magic.",
+   "match": "exact",
+   "abilities": [
+    "int",
+    "wis",
+    "cha"
+   ],
+   "aliases": [
+    "Gnomish Cunning"
+   ]
+  },
+  {
+   "id": "spell-counterspell",
+   "name": "Counterspell",
+   "kind": "spell",
+   "cost": null,
+   "edition": "both",
+   "source": "PHB",
+   "creatures": [],
+   "limit": null,
+   "effect": "Reaction when it sees a creature within 60 ft cast a spell: try to interrupt it (see the spell for its edition's rules). Uses a 3rd-level slot or higher.",
+   "match": "exact",
+   "rangeFt": 60
+  },
+  {
+   "id": "hit-shield",
+   "name": "Shield",
+   "kind": "hit",
+   "cost": null,
+   "edition": "both",
+   "source": "PHB",
+   "creatures": [],
+   "limit": null,
+   "effect": "Reaction when hit by an attack (or targeted by magic missile): +5 AC until the start of its next turn, including against the triggering attack.",
+   "match": "exact",
+   "attack": "any",
+   "activation": "reaction",
+   "requires": "magic missile"
   }
  ],
  "creatures": [
