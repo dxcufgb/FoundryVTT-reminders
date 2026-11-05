@@ -15,6 +15,10 @@ and no npm dependencies.
   `dnd5e.rollAbilitySave` → `onSaveRolled`, `useResistance`), when-hit traits such as Heated Body (`createChatMessage`
   on a dnd5e attack message → `onAttackMessage` → `postHitCard`), card buttons and live labels (`refreshLabels`,
   `refreshCardsFor`), `useItem`, and the module API (`game.modules.get("dxcufgbs-reminders").api`).
+- `scripts/debug-recorder.js` – optional integration with Dxcufgb's Debug Recorder (`dxcufgbs-debug-recorder`, not a
+  dependency): registers on the recorder's `dxcufgbs-debug-recorder.ready` hook or, if it was ready first, from this
+  module's `ready` (once); `crumb(key, data)` leaves breadcrumbs only while it records and never throws. The snapshot
+  is `debugSnapshot()` in `reminders.js`; `noteError` counts errors caught in hook handlers for it.
 - `data/reminders.json` – the default list (`version`, `matching`, `kinds`, `features`, `creatures`): the legendary
   and lair actions of the 2014 and 2024 Monster Manuals, plus when-hit traits (Heated Body). Copied into each world on first GM
   start; on later starts `mergeDefaults` adds new default entries (by `id`) once (setting `MergeDefaultList`). The
@@ -30,6 +34,10 @@ and no npm dependencies.
 - Settings are all `world` scope. The list lives in the hidden `ReminderList` setting (`config: false`, type Object);
   `listCache` must be reset whenever it changes (`saveList` and the setting's `onChange` do this).
 - Strings go through `t()` (`DXRM.` prefix). Hook handlers catch and `console.error` their errors.
+- The debug-recorder integration is optional: everything works without the recorder, and `crumb` / the snapshot
+  must never throw. Snapshot and breadcrumb data must never contain names, free text, image paths or URLs (here also:
+  no creature / item / user names, list entry text, uuids, sound paths or error messages), only counts, booleans,
+  numbers and the module's own fixed values (kinds, card types, results, error class names).
 - Update the wiki (not `README.md`, which only has the install steps and links to the wiki) when behaviour, settings or the API change.
 
 ## Review focus
