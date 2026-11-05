@@ -19,10 +19,24 @@ let recorder = null;
 /** Builds the snapshot; set from reminders.js on ready. Until then the snapshot only says "not ready". */
 let buildSnapshot = () => ({ ready: false });
 
+/** Built-in error classes reported as themselves; anything else (custom classes) becomes "other". */
+const ERROR_CODES = new Set([
+  "Error", "TypeError", "RangeError", "ReferenceError", "SyntaxError", "AbortError", "TimeoutError",
+  "NetworkError", "NotAllowedError", "NotFoundError", "SecurityError", "InvalidStateError"
+]);
+
+/** A fixed error code for debug data: a built-in error class name or "other", never a message. */
+export function errorCode(err) {
+  const name = err?.name;
+  return typeof name === "string" && ERROR_CODES.has(name) ? name : "other";
+}
+
+/** The recorder's API: the one registered with, else the installed recorder's (null without one). */
 function recorderApi() {
   return recorder ?? game.modules?.get(RECORDER_ID)?.api ?? null;
 }
 
+/** Register this module's snapshot with the recorder, once; does nothing for a missing or odd API. */
 function register(rec) {
   if (recorder || !rec || typeof rec.register !== "function") return;
   try {
@@ -31,7 +45,7 @@ function register(rec) {
         try {
           return buildSnapshot();
         } catch (err) {
-          return { snapshotFailed: true, error: err?.name ?? "Error" };
+          return { snapshotFailed: true, error: errorCode(err) };
         }
       }
     });

@@ -52,7 +52,7 @@
  * offered, so actions the GM removed are not added again.
  */
 
-import { crumb, registerDebugRecorder } from "./debug-recorder.js";
+import { crumb, errorCode, registerDebugRecorder } from "./debug-recorder.js";
 
 const MODULE_ID = "dxcufgbs-reminders";
 const LIST_KEY = "ReminderList";
@@ -66,10 +66,10 @@ const lairDone = new Set();
 /** Errors caught in hook handlers on this client, by area (for the debug recorder). */
 const hookErrors = {};
 
-/** Count a caught hook error and leave a breadcrumb (error class name only, never the message). */
+/** Count a caught hook error and leave a breadcrumb (a fixed error code only, never the message). */
 function noteError(area, err) {
   hookErrors[area] = (hookErrors[area] ?? 0) + 1;
-  crumb("hook.error", { area, error: err?.name ?? "Error" });
+  crumb("hook.error", { area, error: errorCode(err) });
 }
 
 /* -------------------------------------------- */
