@@ -40,11 +40,14 @@ function recorderApi() {
   return recorder ?? game.modules?.get(RECORDER_ID)?.api ?? null;
 }
 
-/** Register this module's snapshot with the recorder, once; does nothing for a missing or odd API. */
+/**
+ * Register this module's snapshot with the recorder, once; does nothing for a missing or odd API. The API is kept
+ * only when register() succeeds (it returns false on failure), so the fallback on ready can try again.
+ */
 function register(rec) {
   if (recorder || !rec || typeof rec.register !== "function") return;
   try {
-    rec.register(MODULE_ID, {
+    if (rec.register(MODULE_ID, {
       snapshot: () => {
         try {
           return buildSnapshot();
@@ -52,8 +55,7 @@ function register(rec) {
           return { snapshotFailed: true, error: errorCode(err) };
         }
       }
-    });
-    recorder = rec;
+    }) !== false) recorder = rec;
   } catch (err) {
     console.debug(`${MODULE_ID} | debug recorder registration failed`, err);
   }
