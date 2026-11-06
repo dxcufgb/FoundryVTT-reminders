@@ -231,7 +231,8 @@ function debugSnapshot() {
     responsibleGM: isResponsibleGM(),
     gmsActive: game.users.filter(u => u.isGM && u.active).length,
     system: game.system.id === "dnd5e" ? "dnd5e" : "other",
-    systemVersion: game.system.id === "dnd5e" ? game.system.version : null,
+    // Only a plain numeric version ("5.1.4"), never other text from the package.
+    systemVersion: game.system.id === "dnd5e" && /^\d+(\.\d+){0,3}$/.test(String(game.system.version)) ? game.system.version : null,
     list: list ? {
       version: Number.isFinite(list.version) ? list.version : null,
       entries: features.length,

@@ -27,8 +27,12 @@ const ERROR_CODES = new Set([
 
 /** A fixed error code for debug data: a built-in error class name or "other", never a message. */
 export function errorCode(err) {
-  const name = err?.name;
-  return typeof name === "string" && ERROR_CODES.has(name) ? name : "other";
+  try {
+    const name = err?.name;
+    return typeof name === "string" && ERROR_CODES.has(name) ? name : "other";
+  } catch {
+    return "other"; // e.g. a throwing `name` getter
+  }
 }
 
 /** The recorder's API: the one registered with, else the installed recorder's (null without one). */
