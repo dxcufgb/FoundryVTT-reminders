@@ -59,6 +59,11 @@ const LIST_KEY = "ReminderList";
 const DEFAULT_LIST_PATH = `modules/${MODULE_ID}/data/reminders.json`;
 const KINDS = ["legendary", "villain", "lair", "hit"];
 const VILLAIN_NAME = /villain\s+action/i;
+/** Card types this module posts (message flag `card`). */
+const CARDS = ["turn", "lair", "resist", "hit"];
+
+/** A value for debug data only if it is one of `allowed`; otherwise `fallback`. Never passes other text on. */
+const fixedValue = (value, allowed, fallback = "other") => allowed.includes(value) ? value : fallback;
 
 /** Lair cards already posted, as "combatId:round". */
 const lairDone = new Set();
@@ -188,7 +193,7 @@ function debugSnapshot() {
   for (const message of game.messages ?? []) {
     const card = message.getFlag?.(MODULE_ID, "card");
     if (!card) continue;
-    const key = ["turn", "lair", "resist", "hit"].includes(card) ? card : "other";
+    const key = fixedValue(card, CARDS);
     cards[key] = (cards[key] ?? 0) + 1;
   }
 
@@ -228,7 +233,7 @@ function debugSnapshot() {
     system: game.system.id === "dnd5e" ? "dnd5e" : "other",
     systemVersion: game.system.id === "dnd5e" ? game.system.version : null,
     list: list ? {
-      version: list.version ?? null,
+      version: Number.isFinite(list.version) ? list.version : null,
       entries: features.length,
       byKind: countBy(features, "kind", KINDS),
       byEdition: countBy(features, "edition", ["2014", "2024", "custom"]),
@@ -477,7 +482,7 @@ async function addToList(item, kind) {
   kind ??= (realItem && activationKind(realItem)?.kind) ?? (VILLAIN_NAME.test(name) ? "villain" : "legendary");
   const data = foundry.utils.deepClone(getList()) ?? await loadDefaultList() ?? { version: 1, kinds: {}, features: [] };
   data.features.push(customEntry(name, { item: realItem, kind }));
-  crumb("list.add", { kind, fromItem: !!realItem, entries: data.features.length });
+  crumb("list.add", { kind: fixedValue(kind, KINDS), fromItem: !!realItem, entries: data.features.length });
 
   await saveList(data);
   ui.notifications.info(t("Notify.Added", { item: name }));
@@ -919,7 +924,7 @@ async function configureItem(item) {
     ]
   });
   if (!mode || mode === "cancel" || mode === current) return;
-  crumb("item.configure", { from: current, to: mode, auto: auto.kind ?? "none" });
+  crumb("item.configure", { from: current, to: mode, auto: auto.kind ? fixedValue(auto.kind, KINDS) : "none" });
 
   if (mode === "auto") await item.unsetFlag(MODULE_ID, "kind");
   else await item.setFlag(MODULE_ID, "kind", mode === "never" ? "none" : mode);
@@ -1489,7 +1494,9 @@ function refreshLabels(message, html) {
 }
 
 Hooks.on("renderChatMessageHTML", (message, html) => {
-  if (!message.getFlag(MODULE_ID, "card")) return;
+  const card = message.getFlag(MODULE_ID, "card");
+  if (!card) return;
+  const cardType = fixedValue(card, CARDS);
   refreshLabels(message, html);
 
   html.querySelectorAll("button.dxrm-use, button.dxrm-open, button.dxrm-exclude").forEach(btn => {
@@ -1502,7 +1509,7 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
       event.stopPropagation();
       const item = await fromUuid(btn.dataset.itemUuid);
       if (!item) {
-        crumb("card.use", { card: message.getFlag(MODULE_ID, "card"), result: "itemMissing" });
+        crumb("card.use", { card: cardType, result: "itemMissing" });
         ui.notifications.warn(t("Notify.ItemMissing"));
         return;
       }
@@ -1519,7 +1526,7 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
         const kind = btn.closest(".dxrm-option")?.dataset.kind;
         const result = await useItem(item);
         crumb("card.use", {
-          card: message.getFlag(MODULE_ID, "card"), kind: KINDS.includes(kind) ? kind : null,
+          card: cardType, kind: fixedValue(kind, KINDS),
           result: result === null || result === undefined || result === false ? "cancelled" : "used"
         });
         // Outside dnd5e the postUseActivity hook doesn't fire, so record villain use here.
