@@ -52,14 +52,30 @@
  * offered, so actions the GM removed are not added again.
  */
 
+import { crumb, errorCode, registerDebugRecorder } from "./debug-recorder.js";
+
 const MODULE_ID = "dxcufgbs-reminders";
 const LIST_KEY = "ReminderList";
 const DEFAULT_LIST_PATH = `modules/${MODULE_ID}/data/reminders.json`;
 const KINDS = ["legendary", "villain", "lair", "hit"];
 const VILLAIN_NAME = /villain\s+action/i;
+/** Card types this module posts (message flag `card`). */
+const CARDS = ["turn", "lair", "resist", "hit"];
+
+/** A value for debug data only if it is one of `allowed`; otherwise `fallback`. Never passes other text on. */
+const fixedValue = (value, allowed, fallback = "other") => allowed.includes(value) ? value : fallback;
 
 /** Lair cards already posted, as "combatId:round". */
 const lairDone = new Set();
+
+/** Errors caught in hook handlers on this client, by area (for the debug recorder). */
+const hookErrors = {};
+
+/** Count a caught hook error and leave a breadcrumb (a fixed error code only, never the message). */
+function noteError(area, err) {
+  hookErrors[area] = (hookErrors[area] ?? 0) + 1;
+  crumb("hook.error", { area, error: errorCode(err) });
+}
 
 /* -------------------------------------------- */
 /*  Settings                                    */
@@ -144,9 +160,98 @@ Hooks.once("ready", async () => {
   try {
     await ensureList();
   } catch (err) {
+    noteError("ensureList", err);
     console.error(`${MODULE_ID} | ensureList`, err);
   }
+  registerDebugRecorder(debugSnapshot);
 });
+
+/* -------------------------------------------- */
+/*  Debug Recorder (optional)                   */
+/* -------------------------------------------- */
+
+/** Count values of one field over an array, e.g. { legendary: 3, lair: 1 }. Unknown values count as "other". */
+function countBy(items, field, allowed) {
+  const out = {};
+  for (const item of items) {
+    const value = item?.[field];
+    const key = allowed.includes(value) ? value : "other";
+    out[key] = (out[key] ?? 0) + 1;
+  }
+  return out;
+}
+
+/**
+ * Runtime state for Dxcufgb's Debug Recorder: counts, booleans and this module's own fixed values only.
+ * No creature, item or user names, no list entry text, uuids, image or sound paths.
+ */
+function debugSnapshot() {
+  const list = getList();
+  const features = list?.features ?? [];
+  const combat = game.combat ?? null;
+  const cards = {};
+  for (const message of game.messages ?? []) {
+    const card = message.getFlag?.(MODULE_ID, "card");
+    if (!card) continue;
+    const key = fixedValue(card, CARDS);
+    cards[key] = (cards[key] ?? 0) + 1;
+  }
+
+  let combatInfo = null;
+  if (combat) {
+    const eligible = eligibleCombatants(combat);
+    const reminders = { legendary: 0, villain: 0, lair: 0, hit: 0 };
+    let withLegendaryPool = 0;
+    let withResistance = 0;
+    let withLair = 0;
+    for (const combatant of eligible) {
+      const actor = combatant.actor;
+      if (legendaryPoints(actor)) withLegendaryPool++;
+      if (legendaryResistance(actor)) withResistance++;
+      if (hasLair(actor) && getProp(actor?.system ?? {}, "resources.lair")) withLair++;
+      for (const r of findReminders(actor)) if (r.kind in reminders) reminders[r.kind]++;
+    }
+    combatInfo = {
+      started: !!combat.started,
+      round: combat.round ?? 0,
+      combatants: combat.combatants.size,
+      eligible: eligible.length,
+      pcs: combat.combatants.filter(isPcCombatant).length,
+      withLegendaryPool,
+      withResistance,
+      withLair,
+      reminders,
+      villainUsed: Object.keys(combat.getFlag(MODULE_ID, VILLAIN_FLAG) ?? {}).length
+    };
+  }
+
+  return {
+    ready: true,
+    isGM: game.user.isGM,
+    responsibleGM: isResponsibleGM(),
+    gmsActive: game.users.filter(u => u.isGM && u.active).length,
+    system: game.system.id === "dnd5e" ? "dnd5e" : "other",
+    // Only a plain numeric version ("5.1.4"), never other text from the package.
+    systemVersion: game.system.id === "dnd5e" && /^\d+(\.\d+){0,3}$/.test(String(game.system.version)) ? game.system.version : null,
+    list: list ? {
+      version: Number.isFinite(list.version) ? list.version : null,
+      entries: features.length,
+      byKind: countBy(features, "kind", KINDS),
+      byEdition: countBy(features, "edition", ["2014", "2024", "custom"]),
+      byMatch: countBy(features, "match", ["exact", "contains", undefined]),
+      custom: features.filter(f => String(f?.id ?? "").startsWith("custom-")).length,
+      withoutId: features.filter(f => !f?.id).length,
+      knownDefaults: Array.isArray(list.knownDefaults) ? list.knownDefaults.length : null,
+      cacheBuilt: listCache !== null,
+      cacheSize: listCache?.length ?? 0
+    } : null,
+    lairDone: lairDone.size,
+    combat: combatInfo,
+    combats: game.combats?.size ?? 0,
+    cardsInChat: cards,
+    hookErrors: { ...hookErrors }
+  };
+}
 
 /* -------------------------------------------- */
 /*  Helpers                                     */
@@ -343,17 +448,25 @@ function mergeDefaults(current, defaults) {
 async function ensureList() {
   if (!isResponsibleGM()) return;
   const current = getList();
-  if (current && !setting("MergeDefaultList")) return;
+  if (current && !setting("MergeDefaultList")) {
+    crumb("list.ensure", { result: "mergeOff", entries: current.features.length });
+    return;
+  }
 
   const defaults = await loadDefaultList();
-  if (!defaults) return;
+  if (!defaults) {
+    crumb("list.ensure", { result: "loadFailed", hadList: !!current });
+    return;
+  }
   if (!current) {
+    crumb("list.ensure", { result: "created", entries: defaults.features.length });
     await saveList(withKnownDefaults(defaults));
     ui.notifications.info(t("Notify.ListCreated", { count: defaults.features.length }));
     return;
   }
 
   const { data, added, changed } = mergeDefaults(current, defaults);
+  crumb("list.ensure", { result: changed ? "merged" : "unchanged", added: added.length, entries: data.features.length });
   if (!changed) return;
   await saveList(data);
   if (added.length) {
@@ -370,6 +483,7 @@ async function addToList(item, kind) {
   kind ??= (realItem && activationKind(realItem)?.kind) ?? (VILLAIN_NAME.test(name) ? "villain" : "legendary");
   const data = foundry.utils.deepClone(getList()) ?? await loadDefaultList() ?? { version: 1, kinds: {}, features: [] };
   data.features.push(customEntry(name, { item: realItem, kind }));
+  crumb("list.add", { kind: fixedValue(kind, KINDS), fromItem: !!realItem, entries: data.features.length });
 
   await saveList(data);
   ui.notifications.info(t("Notify.Added", { item: name }));
@@ -389,6 +503,7 @@ async function removeFromList(nameOrItem) {
   const exact = matching.filter(c => !c.contains);
   const doomed = new Set((exact.length ? exact : matching).map(c => c.entry.id ?? c.entry));
   data.features = data.features.filter(entry => !doomed.has(entry.id ?? entry));
+  crumb("list.remove", { removed: before - data.features.length, exact: exact.length > 0 });
   if (data.features.length === before) return false;
 
   await saveList(data);
@@ -403,6 +518,7 @@ function exportList() {
     ui.notifications.warn(t("Notify.NoList"));
     return;
   }
+  crumb("list.export", { entries: data.features.length });
   const file = `reminders-${game.world.id}.json`;
   foundry.utils.saveDataToFile(JSON.stringify(data, null, 2), "application/json", file);
   ui.notifications.info(t("Notify.Exported", { file, count: data.features.length }));
@@ -463,6 +579,7 @@ async function importListFlow() {
   try {
     data = validateImport(picked.text);
   } catch (err) {
+    crumb("list.import", { result: "invalid" });
     ui.notifications.error(t("Import.Failed", { error: err.message }));
     return false;
   }
@@ -482,8 +599,12 @@ async function importListFlow() {
       { action: "no", label: t("Import.No"), icon: "fa-solid fa-xmark", default: true }
     ]
   });
-  if (answer !== "yes") return false;
+  if (answer !== "yes") {
+    crumb("list.import", { result: "declined", entries: data.features.length });
+    return false;
+  }
 
+  crumb("list.import", { result: "replaced", entries: data.features.length, before: currentCount });
   await saveList(data);
   ui.notifications.info(t("Import.Done", { file: picked.name, count: data.features.length }));
   return true;
@@ -492,6 +613,7 @@ async function importListFlow() {
 async function resetList() {
   if (!game.user.isGM) return false;
   const data = await loadDefaultList();
+  crumb("list.reset", { result: data ? "reset" : "loadFailed", entries: data?.features.length ?? 0 });
   if (!data) return false;
   await saveList(withKnownDefaults(data));
   ui.notifications.info(t("Notify.ListCreated", { count: data.features.length }));
@@ -648,6 +770,7 @@ function villainKey(item) {
 async function markVillainUsed(item, combat = game.combat) {
   if (!combat || !item || !game.user.isGM) return;
   if (villainUsed(combat, item)) return;
+  crumb("villain.mark", { inActiveCombat: combat === game.combat });
   await combat.setFlag(MODULE_ID, VILLAIN_FLAG, { [villainKey(item)]: true });
 }
 
@@ -660,6 +783,7 @@ Hooks.on("dnd5e.postUseActivity", activity => {
     const combat = game.combats?.find(c => c.combatants.some(cb => cb.actor?.uuid === item.actor?.uuid)) ?? game.combat;
     markVillainUsed(item, combat);
   } catch (err) {
+    noteError("postUseActivity", err);
     console.error(`${MODULE_ID} | postUseActivity`, err);
   }
 });
@@ -801,6 +925,7 @@ async function configureItem(item) {
     ]
   });
   if (!mode || mode === "cancel" || mode === current) return;
+  crumb("item.configure", { from: current, to: mode, auto: auto.kind ? fixedValue(auto.kind, KINDS) : "none" });
 
   if (mode === "auto") await item.unsetFlag(MODULE_ID, "kind");
   else await item.setFlag(MODULE_ID, "kind", mode === "never" ? "none" : mode);
@@ -831,6 +956,7 @@ async function excludeFromCard(item) {
     buttons
   });
   if (!choice || choice === "cancel") return false;
+  crumb("card.exclude", { choice, tokenActor: !!actor?.isToken });
 
   if (choice === "token") await item.setFlag(MODULE_ID, "kind", "none");
   else if (choice === "actor") await (baseItem ?? item).setFlag(MODULE_ID, "kind", "none");
@@ -877,6 +1003,7 @@ Hooks.on("combatTurnChange", (combat, prior, current) => {
   try {
     onTurnChange(combat, prior, current);
   } catch (err) {
+    noteError("combatTurnChange", err);
     console.error(`${MODULE_ID} | combatTurnChange`, err);
   }
 });
@@ -893,8 +1020,15 @@ function onTurnChange(combat, prior, current) {
   if (setting("LairReminders")) checkLair(combat, prior, current, priorCombatant, currentCombatant);
 
   if (!setting("LegendaryReminders") && !setting("VillainReminders")) return;
-  if (!priorCombatant) return;
-  if (setting("AfterPcOnly") && !isPcCombatant(priorCombatant)) return;
+  if (!priorCombatant) {
+    crumb("turn.change", { result: "noPrior", round: current.round });
+    return;
+  }
+  if (setting("AfterPcOnly") && !isPcCombatant(priorCombatant)) {
+    crumb("turn.change", { result: "notAfterPc", round: current.round });
+    return;
+  }
+  crumb("turn.change", { result: "check", round: current.round, newRound: current.round > prior.round });
   postTurnCard(combat, priorCombatant);
 }
 
@@ -928,6 +1062,12 @@ function gatherTurnOptions(combat, priorCombatant = null) {
 
 async function postTurnCard(combat, priorCombatant) {
   const groups = gatherTurnOptions(combat, priorCombatant);
+  crumb("card.post", {
+    card: "turn", groups: groups.length, posted: groups.length > 0,
+    legendary: groups.reduce((n, g) => n + g.options.filter(o => o.kind === "legendary").length, 0),
+    villain: groups.reduce((n, g) => n + g.options.filter(o => o.kind === "villain").length, 0),
+    whispered: setting("WhisperGM")
+  });
   if (!groups.length) return null;
   await deletePrevious(combat, "turn");
 
@@ -1031,6 +1171,7 @@ async function deletePrevious(combat, card) {
 /** Post the legendary / villain card now (macro / API), regardless of whose turn it was. */
 async function remindNow(combat = game.combat) {
   if (!game.user.isGM || !combat) return null;
+  crumb("api.remindNow", { started: !!combat.started });
   const current = combat.combatant ?? null;
   return postTurnCard(combat, current && isPcCombatant(current) ? null : current);
 }
@@ -1071,6 +1212,7 @@ function checkLair(combat, prior, current, priorCombatant, currentCombatant) {
     if (options.length && !groups.some(g => g.actor === actor)) groups.push({ actor, options, count });
   }
   if (!groups.length) return;
+  crumb("card.post", { card: "lair", groups: groups.length, posted: true, newRound, whispered: setting("WhisperGM") });
   lairDone.add(key);
   postLairCard(combat, groups);
 }
@@ -1122,7 +1264,10 @@ async function onSaveRolled(actor, roll, ability) {
   if (setting("IgnorePlayerOwned") && actor.hasPlayerOwner) return;
   const res = legendaryResistance(actor);
   if (!res || res.value <= 0) return;
-  if (saveFailed(roll) !== true) return;
+  const failed = saveFailed(roll);
+  crumb("resist.save", { failed: failed === null ? "unknown" : failed, uses: res.value, max: res.max });
+  if (failed !== true) return;
+  crumb("card.post", { card: "resist", groups: 1, posted: true, whispered: setting("WhisperGM") });
 
   const abilityLabel = CONFIG.DND5E?.abilities?.[ability]?.label ?? String(ability ?? "").toUpperCase();
   const dc = roll.options?.target ?? roll.options?.dc;
@@ -1158,6 +1303,7 @@ Hooks.on("dnd5e.rollSavingThrow", (rolls, data) => {
     const roll = Array.isArray(rolls) ? rolls[0] : rolls;
     onSaveRolled(data?.subject, roll, data?.ability);
   } catch (err) {
+    noteError("rollSavingThrow", err);
     console.error(`${MODULE_ID} | rollSavingThrow`, err);
   }
 });
@@ -1167,6 +1313,7 @@ Hooks.on("dnd5e.rollAbilitySave", (actor, roll, ability) => {
   try {
     onSaveRolled(actor, roll, ability);
   } catch (err) {
+    noteError("rollAbilitySave", err);
     console.error(`${MODULE_ID} | rollAbilitySave`, err);
   }
 });
@@ -1210,6 +1357,7 @@ Hooks.on("createChatMessage", message => {
   try {
     onAttackMessage(message);
   } catch (err) {
+    noteError("attackMessage", err);
     console.error(`${MODULE_ID} | attack message`, err);
   }
 });
@@ -1235,7 +1383,11 @@ function onAttackMessage(message) {
     const options = findReminders(actor).filter(r => r.kind === "hit" && hitTriggers(r, melee));
     if (options.length) groups.push({ actor, options, ac: target.ac });
   }
-  if (groups.length) postHitCard(message, roll, groups, melee);
+  crumb("hit.check", { targets: targets.length, melee, groups: groups.length });
+  if (groups.length) {
+    crumb("card.post", { card: "hit", groups: groups.length, posted: true, whispered: setting("WhisperGM") });
+    postHitCard(message, roll, groups, melee);
+  }
 }
 
 async function postHitCard(message, roll, groups, melee) {
@@ -1276,10 +1428,17 @@ async function useResistance(actor) {
   const item = actor.items.find(i => /legendary resistance/i.test(i.name) && activitiesOf(i).length);
   if (item && typeof item.use === "function") {
     const result = await item.use();
-    if (!result) return; // the GM cancelled the usage dialog
-    if ((legendaryResistance(actor)?.value ?? res.value) < res.value) return; // the system spent it
+    if (!result) {
+      crumb("resist.use", { result: "cancelled" });
+      return; // the GM cancelled the usage dialog
+    }
+    if ((legendaryResistance(actor)?.value ?? res.value) < res.value) {
+      crumb("resist.use", { result: "item" });
+      return; // the system spent it
+    }
     // The item was used but consumes nothing: spend the use by hand below.
   }
+  crumb("resist.use", { result: "manual", hadItem: !!item });
   await actor.update({ "system.resources.legres.value": res.value - 1 });
   ui.notifications.info(t("Notify.ResistanceUsed", { name: displayName(actor), value: res.value - 1, max: res.max }));
 }
@@ -1336,7 +1495,9 @@ function refreshLabels(message, html) {
 }
 
 Hooks.on("renderChatMessageHTML", (message, html) => {
-  if (!message.getFlag(MODULE_ID, "card")) return;
+  const card = message.getFlag(MODULE_ID, "card");
+  if (!card) return;
+  const cardType = fixedValue(card, CARDS);
   refreshLabels(message, html);
 
   html.querySelectorAll("button.dxrm-use, button.dxrm-open, button.dxrm-exclude").forEach(btn => {
@@ -1349,6 +1510,7 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
       event.stopPropagation();
       const item = await fromUuid(btn.dataset.itemUuid);
       if (!item) {
+        crumb("card.use", { card: cardType, result: "itemMissing" });
         ui.notifications.warn(t("Notify.ItemMissing"));
         return;
       }
@@ -1362,8 +1524,12 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
       }
       btn.disabled = true;
       try {
-        const result = await useItem(item);
         const kind = btn.closest(".dxrm-option")?.dataset.kind;
+        const result = await useItem(item);
+        crumb("card.use", {
+          card: cardType, kind: fixedValue(kind, KINDS),
+          result: result === null || result === undefined || result === false ? "cancelled" : "used"
+        });
         // Outside dnd5e the postUseActivity hook doesn't fire, so record villain use here.
         if (kind === "villain" && result !== null && !game.system.id.startsWith("dnd5e")) {
           const combat = game.combats?.get(message.getFlag(MODULE_ID, "combatId")) ?? game.combat;
@@ -1433,6 +1599,7 @@ Hooks.on("updateCombat", (combat, changes) => {
 /** Use an item in whatever way the current system supports (dnd5e: the native pipeline). */
 async function useItem(item) {
   if (typeof item.use === "function") return item.use();
+  crumb("item.useFallback", { via: ["roll", "toChat", "toMessage", "displayCard"].find(m => typeof item[m] === "function") ?? "description" });
   if (typeof item.roll === "function") return item.roll();
   if (typeof item.toChat === "function") return item.toChat();
   if (typeof item.toMessage === "function") return item.toMessage();
