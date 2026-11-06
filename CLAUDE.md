@@ -37,8 +37,8 @@ and no npm dependencies.
 - The debug-recorder integration is optional: everything works without the recorder, and `crumb` / the snapshot
   must never throw. Snapshot and breadcrumb data must never contain names, free text, image paths or URLs (here also:
   no creature / item / user names, list entry text, uuids, sound paths or error messages), only counts, booleans,
-  numbers, numeric version strings (`systemVersion`, checked against `\d+(.\d+)*`) and the module's own fixed values
-  (kinds, card types, results, `errorCode()` values: a built-in error class name or `"other"`).
+  numbers, numeric version strings (`systemVersion`, checked against `^\d+(\.\d+){0,3}$`) and the module's own fixed
+  values (kinds, card types, results, `errorCode()` values: a built-in error class name or `"other"`).
 - Update the wiki (not `README.md`, which only has the install steps and links to the wiki) when behaviour, settings or the API change.
 
 ## Review focus
